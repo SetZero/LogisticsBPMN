@@ -1,0 +1,5 @@
+camunda.bpm: 
+  run: 
+    cors: 
+      allowed-origins: "*"
+      enabled: true
