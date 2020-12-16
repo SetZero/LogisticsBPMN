@@ -109,6 +109,18 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:serviceTask id="Activity_1esctj3" name="elekronische Ankündigung&#10;beantragen" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:type="external" camunda:topic="createPackage">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="weight">${weight}</camunda:outputParameter>
+          <camunda:outputParameter name="packageDimensions">
+            <camunda:map>
+              <camunda:entry key="w">${width}</camunda:entry>
+              <camunda:entry key="h">${height}</camunda:entry>
+              <camunda:entry key="d">${depth}</camunda:entry>
+            </camunda:map>
+          </camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_1ib9xlp</bpmn:incoming>
       <bpmn:outgoing>Flow_0mn9h98</bpmn:outgoing>
     </bpmn:serviceTask>
