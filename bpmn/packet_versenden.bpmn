@@ -50,12 +50,16 @@
     <bpmn:sequenceFlow id="Flow_14hw7xu" sourceRef="Activity_10uw0sd" targetRef="Activity_00r3yvv" />
     <bpmn:sequenceFlow id="Flow_1juk413" sourceRef="Activity_00r3yvv" targetRef="Gateway_04z2r27" />
     <bpmn:sequenceFlow id="Flow_1hdcu53" name="Fehler bei Fahrer / Fahrzeug" sourceRef="Gateway_04z2r27" targetRef="Activity_10uw0sd" />
-    <bpmn:sequenceFlow id="Flow_0ydauyr" name="Bestätigt" sourceRef="Gateway_04z2r27" targetRef="Activity_1fm56md" />
+    <bpmn:sequenceFlow id="Flow_0ydauyr" name="Bestätigt" sourceRef="Gateway_04z2r27" targetRef="Activity_1fm56md">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_1wrdqch" sourceRef="Activity_1fm56md" targetRef="Activity_1i53m6z" />
     <bpmn:sequenceFlow id="Flow_1teu2n3" sourceRef="Activity_1i53m6z" targetRef="Activity_1m9ggfg" />
     <bpmn:sequenceFlow id="Flow_0pwjax2" name="Pakete verbleibend" sourceRef="Gateway_08eysr8" targetRef="Activity_1gex47f" />
     <bpmn:sequenceFlow id="Flow_14h6aga" name="Paket bestätigt" sourceRef="Activity_1gex47f" targetRef="Gateway_08eysr8" />
-    <bpmn:sequenceFlow id="Flow_1xqwgob" sourceRef="Gateway_08eysr8" targetRef="Activity_0fnghpw" />
+    <bpmn:sequenceFlow id="Flow_1xqwgob" sourceRef="Gateway_08eysr8" targetRef="Activity_0fnghpw">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
     <bpmn:task id="Activity_0fnghpw" name="Zielpaketzentrumsfahrzeug und Fahrer bestimmen">
       <bpmn:incoming>Flow_1xqwgob</bpmn:incoming>
       <bpmn:incoming>Flow_04xw1ev</bpmn:incoming>
@@ -77,7 +81,9 @@
       <bpmn:incoming>Flow_1tqvwy9</bpmn:incoming>
       <bpmn:outgoing>Flow_0l1h5zy</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:sequenceFlow id="Flow_1tqvwy9" sourceRef="Gateway_05ttn8h" targetRef="Activity_1wx3agq" />
+    <bpmn:sequenceFlow id="Flow_1tqvwy9" sourceRef="Gateway_05ttn8h" targetRef="Activity_1wx3agq">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
     <bpmn:task id="Activity_0t8wm4l" name="Paket annehmen">
       <bpmn:incoming>Flow_0l1h5zy</bpmn:incoming>
       <bpmn:outgoing>Flow_142jxyj</bpmn:outgoing>
@@ -99,7 +105,9 @@
     <bpmn:endEvent id="Event_17o59jk">
       <bpmn:incoming>Flow_0fsrzi1</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_0fsrzi1" sourceRef="Gateway_1fcnwns" targetRef="Event_17o59jk" />
+    <bpmn:sequenceFlow id="Flow_0fsrzi1" sourceRef="Gateway_1fcnwns" targetRef="Event_17o59jk">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
     <bpmn:serviceTask id="Activity_1esctj3" name="elekronische Ankündigung&#10;beantragen" camunda:type="external" camunda:topic="createPackage">
       <bpmn:incoming>Flow_1ib9xlp</bpmn:incoming>
       <bpmn:outgoing>Flow_0mn9h98</bpmn:outgoing>
@@ -146,7 +154,7 @@
       <bpmn:incoming>Flow_03evzfw</bpmn:incoming>
       <bpmn:outgoing>Flow_06fjnen</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_0eteamc">
-        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression"> 0 0 6 ? * MON,TUE,WED,THU,FRI *</bpmn:timeCycle>
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">0 0 6 ? * MON,TUE,WED,THU,FRI *</bpmn:timeCycle>
       </bpmn:timerEventDefinition>
     </bpmn:intermediateCatchEvent>
     <bpmn:userTask id="Activity_1gex47f" name="Paketbenachrichtugung und Annahme bestätigen">
@@ -197,9 +205,18 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
       <bpmndi:BPMNShape id="Lane_0gypzwc_di" bpmnElement="Lane_0gypzwc" isHorizontal="true">
         <dc:Bounds x="370" y="100" width="2208" height="170" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_17kbf70_di" bpmnElement="TextAnnotation_17kbf70">
-        <dc:Bounds x="890" y="444" width="100" height="152" />
-      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_06fjnen_di" bpmnElement="Flow_06fjnen">
+        <di:waypoint x="1180" y="338" />
+        <di:waypoint x="1180" y="415" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03evzfw_di" bpmnElement="Flow_03evzfw">
+        <di:waypoint x="1125" y="320" />
+        <di:waypoint x="1162" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0yk9kmw_di" bpmnElement="Flow_0yk9kmw">
+        <di:waypoint x="1050" y="320" />
+        <di:waypoint x="1075" y="320" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0fsrzi1_di" bpmnElement="Flow_0fsrzi1">
         <di:waypoint x="2325" y="470" />
         <di:waypoint x="2442" y="470" />
@@ -312,18 +329,6 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
         <di:waypoint x="445" y="205" />
         <di:waypoint x="500" y="205" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0yk9kmw_di" bpmnElement="Flow_0yk9kmw">
-        <di:waypoint x="1050" y="320" />
-        <di:waypoint x="1075" y="320" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_03evzfw_di" bpmnElement="Flow_03evzfw">
-        <di:waypoint x="1125" y="320" />
-        <di:waypoint x="1162" y="320" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_06fjnen_di" bpmnElement="Flow_06fjnen">
-        <di:waypoint x="1180" y="338" />
-        <di:waypoint x="1180" y="415" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="409" y="187" width="36" height="36" />
       </bpmndi:BPMNShape>
@@ -354,18 +359,6 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
       <bpmndi:BPMNShape id="Event_17o59jk_di" bpmnElement="Event_17o59jk">
         <dc:Bounds x="2442" y="452" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_14l7tlm_di" bpmnElement="TextAnnotation_14l7tlm">
-        <dc:Bounds x="690" y="280" width="100" height="40" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0yqgrcg_di" bpmnElement="TextAnnotation_0yqgrcg">
-        <dc:Bounds x="1910" y="210" width="100" height="54" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0enxoij_di" bpmnElement="TextAnnotation_0enxoij">
-        <dc:Bounds x="1630" y="511" width="100" height="30" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_1pvdekr_di" bpmnElement="TextAnnotation_1pvdekr">
-        <dc:Bounds x="1990" y="490" width="100" height="40" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_09hb7b4_di" bpmnElement="Activity_1esctj3">
         <dc:Bounds x="500" y="165" width="100" height="80" />
       </bpmndi:BPMNShape>
@@ -395,6 +388,21 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_08eysr8_di" bpmnElement="Gateway_08eysr8" isMarkerVisible="true">
         <dc:Bounds x="1315" y="430" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_14l7tlm_di" bpmnElement="TextAnnotation_14l7tlm">
+        <dc:Bounds x="690" y="280" width="100" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0yqgrcg_di" bpmnElement="TextAnnotation_0yqgrcg">
+        <dc:Bounds x="1910" y="210" width="100" height="54" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0enxoij_di" bpmnElement="TextAnnotation_0enxoij">
+        <dc:Bounds x="1630" y="511" width="100" height="30" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1pvdekr_di" bpmnElement="TextAnnotation_1pvdekr">
+        <dc:Bounds x="1990" y="490" width="100" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_17kbf70_di" bpmnElement="TextAnnotation_17kbf70">
+        <dc:Bounds x="890" y="444" width="100" height="152" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Association_0n5f4v1_di" bpmnElement="Association_0n5f4v1">
         <di:waypoint x="500" y="328" />
