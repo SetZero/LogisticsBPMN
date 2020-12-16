@@ -20,7 +20,7 @@ async function fetchExternalTasks() {
 
 function App() {
   fetchExternalTasks()
-  .then(e => e.json)
+  .then(e => e.json())
   .then(e => console.log(e))
   .catch(e => console.error(e));
 
