@@ -7,26 +7,26 @@
 - Ermitteln von freiem Fahrzeug an Standort
 - Zuweisung von Fahrer</bpmn:text>
     </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="TextAnnotation_1ad4vu5">
+      <bpmn:text>Package: {
+"packageId": Integer,
+"weight": Double,
+"dimensions": {
+   "width": Double,
+   "height": Double,
+   "length": Double,
+}
+"sender": String,
+"receiver": String,
+
+}</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0n5f4v1" sourceRef="ComputePackageData" targetRef="TextAnnotation_1ffrwfs" />
   </bpmn:collaboration>
   <bpmn:process id="Process_0qarnxg" isExecutable="true">
     <bpmn:laneSet id="LaneSet_0haikid">
-      <bpmn:lane id="Lane_0gypzwc" name="Absender">
-        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>AcceptPackageData</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>WaitForPackageConfirmation</bpmn:flowNodeRef>
-      </bpmn:lane>
-      <bpmn:lane id="Lane_0j32819" name="Packetverwaltung">
-        <bpmn:flowNodeRef>Activity_0fnghpw</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Activity_1wx3agq</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>ComputePackageData</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>CreatePackageLabel</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>SavePackageData</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Gateway_0bpibli</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Event_1858bji</bpmn:flowNodeRef>
-      </bpmn:lane>
       <bpmn:lane id="Lane_1mxpb44" name="Fahrer">
         <bpmn:flowNodeRef>CheckPackageData</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Activity_022fg08</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_05ttn8h</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_0t8wm4l</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_032plv6</bpmn:flowNodeRef>
@@ -35,6 +35,21 @@
         <bpmn:flowNodeRef>CheckData</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_1gex47f</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_08eysr8</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_022fg08</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_0j32819" name="Packetverwaltung">
+        <bpmn:flowNodeRef>Activity_1wx3agq</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ComputePackageData</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CreatePackageLabel</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SavePackageData</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_0bpibli</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1858bji</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0fnghpw</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_0gypzwc" name="Absender">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>AcceptPackageData</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>WaitForPackageConfirmation</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:startEvent id="StartEvent_1">
@@ -45,69 +60,32 @@
       <bpmn:outgoing>Flow_1hdcu53</bpmn:outgoing>
       <bpmn:outgoing>Flow_0ydauyr</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_1ib9xlp" sourceRef="StartEvent_1" targetRef="AcceptPackageData" />
-    <bpmn:sequenceFlow id="Flow_0mn9h98" sourceRef="AcceptPackageData" targetRef="ComputePackageData" />
-    <bpmn:sequenceFlow id="Flow_14hw7xu" sourceRef="ComputePackageData" targetRef="CheckData" />
-    <bpmn:sequenceFlow id="Flow_1juk413" sourceRef="CheckData" targetRef="CheckPackageData" />
-    <bpmn:sequenceFlow id="Flow_1hdcu53" name="Fehler bei Fahrer / Fahrzeug" sourceRef="CheckPackageData" targetRef="ComputePackageData" />
-    <bpmn:sequenceFlow id="Flow_0ydauyr" name="Bestätigt" sourceRef="CheckPackageData" targetRef="CreatePackageLabel">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${confirmed} == true</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_1wrdqch" sourceRef="CreatePackageLabel" targetRef="WaitForPackageConfirmation" />
-    <bpmn:sequenceFlow id="Flow_1teu2n3" sourceRef="WaitForPackageConfirmation" targetRef="SavePackageData" />
-    <bpmn:sequenceFlow id="Flow_0pwjax2" name="Pakete verbleibend" sourceRef="Gateway_08eysr8" targetRef="Activity_1gex47f" />
-    <bpmn:sequenceFlow id="Flow_14h6aga" name="Paket bestätigt" sourceRef="Activity_1gex47f" targetRef="Gateway_08eysr8" />
-    <bpmn:sequenceFlow id="Flow_1xqwgob" sourceRef="Gateway_08eysr8" targetRef="Activity_0fnghpw">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">true</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:task id="Activity_0fnghpw" name="Zielpaketzentrumsfahrzeug und Fahrer bestimmen">
-      <bpmn:incoming>Flow_1xqwgob</bpmn:incoming>
-      <bpmn:incoming>Flow_04xw1ev</bpmn:incoming>
-      <bpmn:outgoing>Flow_16aafjw</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:task id="Activity_022fg08" name="Paket annehmen">
-      <bpmn:incoming>Flow_16aafjw</bpmn:incoming>
-      <bpmn:outgoing>Flow_12kn09f</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:sequenceFlow id="Flow_16aafjw" sourceRef="Activity_0fnghpw" targetRef="Activity_022fg08" />
-    <bpmn:sequenceFlow id="Flow_12kn09f" sourceRef="Activity_022fg08" targetRef="Gateway_05ttn8h" />
-    <bpmn:exclusiveGateway id="Gateway_05ttn8h" default="Flow_04xw1ev">
+    <bpmn:exclusiveGateway id="Gateway_05ttn8h">
       <bpmn:incoming>Flow_12kn09f</bpmn:incoming>
       <bpmn:outgoing>Flow_04xw1ev</bpmn:outgoing>
       <bpmn:outgoing>Flow_1tqvwy9</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_04xw1ev" name="Paket wurde nicht aufgenommen" sourceRef="Gateway_05ttn8h" targetRef="Activity_0fnghpw" />
     <bpmn:task id="Activity_1wx3agq" name="Zielfahrzeug und Fahrer bestimmen">
       <bpmn:incoming>Flow_1tqvwy9</bpmn:incoming>
       <bpmn:outgoing>Flow_0l1h5zy</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:sequenceFlow id="Flow_1tqvwy9" sourceRef="Gateway_05ttn8h" targetRef="Activity_1wx3agq">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">true</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
     <bpmn:task id="Activity_0t8wm4l" name="Paket annehmen">
       <bpmn:incoming>Flow_0l1h5zy</bpmn:incoming>
       <bpmn:outgoing>Flow_142jxyj</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:sequenceFlow id="Flow_0l1h5zy" sourceRef="Activity_1wx3agq" targetRef="Activity_0t8wm4l" />
     <bpmn:task id="Activity_032plv6" name="Abgabe bei Kunden">
       <bpmn:incoming>Flow_142jxyj</bpmn:incoming>
       <bpmn:incoming>Flow_0y8obho</bpmn:incoming>
       <bpmn:outgoing>Flow_1leudx5</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:sequenceFlow id="Flow_142jxyj" sourceRef="Activity_0t8wm4l" targetRef="Activity_032plv6" />
-    <bpmn:sequenceFlow id="Flow_0y8obho" name="Pakete verbleibend" sourceRef="Gateway_1fcnwns" targetRef="Activity_032plv6" />
     <bpmn:exclusiveGateway id="Gateway_1fcnwns" default="Flow_0y8obho">
       <bpmn:incoming>Flow_1leudx5</bpmn:incoming>
       <bpmn:outgoing>Flow_0y8obho</bpmn:outgoing>
       <bpmn:outgoing>Flow_0fsrzi1</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_1leudx5" name="Abgabe" sourceRef="Activity_032plv6" targetRef="Gateway_1fcnwns" />
     <bpmn:endEvent id="Event_17o59jk">
       <bpmn:incoming>Flow_0fsrzi1</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_0fsrzi1" sourceRef="Gateway_1fcnwns" targetRef="Event_17o59jk">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">true</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
     <bpmn:serviceTask id="AcceptPackageData" name="elekronische Ankündigung&#10;beantragen" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:type="external" camunda:topic="createPackage">
       <bpmn:extensionElements>
         <camunda:inputOutput>
@@ -152,7 +130,7 @@
       <bpmn:extensionElements>
         <camunda:connector>
           <camunda:inputOutput>
-            <camunda:inputParameter name="url">http://fakeicms/packages/${</camunda:inputParameter>
+            <camunda:inputParameter name="url">http://fakeicms/packages/${confirmed}</camunda:inputParameter>
             <camunda:inputParameter name="method">POST</camunda:inputParameter>
           </camunda:inputOutput>
           <camunda:connectorId>http-connector</camunda:connectorId>
@@ -174,9 +152,6 @@
       <bpmn:incoming>Flow_1teu2n3</bpmn:incoming>
       <bpmn:outgoing>Flow_0yk9kmw</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_0yk9kmw" sourceRef="SavePackageData" targetRef="Gateway_0bpibli" />
-    <bpmn:sequenceFlow id="Flow_03evzfw" sourceRef="Gateway_0bpibli" targetRef="Event_1858bji" />
-    <bpmn:sequenceFlow id="Flow_06fjnen" sourceRef="Event_1858bji" targetRef="Activity_1gex47f" />
     <bpmn:eventBasedGateway id="Gateway_0bpibli">
       <bpmn:incoming>Flow_0yk9kmw</bpmn:incoming>
       <bpmn:outgoing>Flow_03evzfw</bpmn:outgoing>
@@ -198,270 +173,340 @@
       <bpmn:outgoing>Flow_0pwjax2</bpmn:outgoing>
       <bpmn:outgoing>Flow_1xqwgob</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:association id="Association_0n5f4v1" sourceRef="ComputePackageData" targetRef="TextAnnotation_1ffrwfs" />
+    <bpmn:userTask id="Activity_022fg08" name="Paket annehmen">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="Package" label="Paket" type="string" />
+        </camunda:formData>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="PackageMap">
+            <camunda:map>
+              <camunda:entry key="Package">Boolean</camunda:entry>
+            </camunda:map>
+          </camunda:inputParameter>
+          <camunda:outputParameter name="PackageMap">
+            <camunda:map>
+              <camunda:entry key="Package">Boolean</camunda:entry>
+            </camunda:map>
+          </camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_16aafjw</bpmn:incoming>
+      <bpmn:outgoing>Flow_12kn09f</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Activity_0fnghpw" name="Zielpaketzentrumsfahrzeug und Fahrer bestimmen" camunda:class="rocks.magical.process.DestinationTransportGenerator">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="PackageMap">
+            <camunda:map>
+              <camunda:entry key="Package">Boolean</camunda:entry>
+            </camunda:map>
+          </camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1xqwgob</bpmn:incoming>
+      <bpmn:incoming>Flow_04xw1ev</bpmn:incoming>
+      <bpmn:outgoing>Flow_16aafjw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_06fjnen" sourceRef="Event_1858bji" targetRef="Activity_1gex47f" />
+    <bpmn:sequenceFlow id="Flow_03evzfw" sourceRef="Gateway_0bpibli" targetRef="Event_1858bji" />
+    <bpmn:sequenceFlow id="Flow_0yk9kmw" sourceRef="SavePackageData" targetRef="Gateway_0bpibli" />
+    <bpmn:sequenceFlow id="Flow_0fsrzi1" sourceRef="Gateway_1fcnwns" targetRef="Event_17o59jk">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1leudx5" name="Abgabe" sourceRef="Activity_032plv6" targetRef="Gateway_1fcnwns" />
+    <bpmn:sequenceFlow id="Flow_0y8obho" name="Pakete verbleibend" sourceRef="Gateway_1fcnwns" targetRef="Activity_032plv6" />
+    <bpmn:sequenceFlow id="Flow_142jxyj" sourceRef="Activity_0t8wm4l" targetRef="Activity_032plv6" />
+    <bpmn:sequenceFlow id="Flow_0l1h5zy" sourceRef="Activity_1wx3agq" targetRef="Activity_0t8wm4l" />
+    <bpmn:sequenceFlow id="Flow_1tqvwy9" sourceRef="Gateway_05ttn8h" targetRef="Activity_1wx3agq">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="JavaScript">console.log("todo");</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_04xw1ev" name="Paket wurde nicht aufgenommen" sourceRef="Gateway_05ttn8h" targetRef="Activity_0fnghpw">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="JavaScript">console.log("todo");</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_12kn09f" sourceRef="Activity_022fg08" targetRef="Gateway_05ttn8h" />
+    <bpmn:sequenceFlow id="Flow_16aafjw" sourceRef="Activity_0fnghpw" targetRef="Activity_022fg08" />
+    <bpmn:sequenceFlow id="Flow_1xqwgob" sourceRef="Gateway_08eysr8" targetRef="Activity_0fnghpw">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_14h6aga" name="Paket bestätigt" sourceRef="Activity_1gex47f" targetRef="Gateway_08eysr8" />
+    <bpmn:sequenceFlow id="Flow_0pwjax2" name="Pakete verbleibend" sourceRef="Gateway_08eysr8" targetRef="Activity_1gex47f" />
+    <bpmn:sequenceFlow id="Flow_1teu2n3" sourceRef="WaitForPackageConfirmation" targetRef="SavePackageData" />
+    <bpmn:sequenceFlow id="Flow_1wrdqch" sourceRef="CreatePackageLabel" targetRef="WaitForPackageConfirmation" />
+    <bpmn:sequenceFlow id="Flow_0ydauyr" name="Bestätigt" sourceRef="CheckPackageData" targetRef="CreatePackageLabel">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${confirmed} == true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1hdcu53" name="Fehler bei Fahrer / Fahrzeug" sourceRef="CheckPackageData" targetRef="ComputePackageData" />
+    <bpmn:sequenceFlow id="Flow_1juk413" sourceRef="CheckData" targetRef="CheckPackageData" />
+    <bpmn:sequenceFlow id="Flow_14hw7xu" sourceRef="ComputePackageData" targetRef="CheckData" />
+    <bpmn:sequenceFlow id="Flow_0mn9h98" sourceRef="AcceptPackageData" targetRef="ComputePackageData" />
+    <bpmn:sequenceFlow id="Flow_1ib9xlp" sourceRef="StartEvent_1" targetRef="AcceptPackageData" />
     <bpmn:textAnnotation id="TextAnnotation_14l7tlm">
       <bpmn:text>Sendungsverfolgung erstellt</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:association id="Association_0649h4d" sourceRef="CreatePackageLabel" targetRef="TextAnnotation_14l7tlm" />
     <bpmn:textAnnotation id="TextAnnotation_0yqgrcg">
       <bpmn:text>Gleiche Funktion wie Zpzf und Abh.</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:association id="Association_155vig9" sourceRef="Activity_1wx3agq" targetRef="TextAnnotation_0yqgrcg" />
     <bpmn:textAnnotation id="TextAnnotation_0enxoij">
       <bpmn:text>Zielort</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:association id="Association_1cukzyz" sourceRef="Activity_022fg08" targetRef="TextAnnotation_0enxoij" />
     <bpmn:textAnnotation id="TextAnnotation_1pvdekr">
       <bpmn:text>Liste von Zielorten</bpmn:text>
     </bpmn:textAnnotation>
-    <bpmn:association id="Association_05xkufw" sourceRef="Activity_0t8wm4l" targetRef="TextAnnotation_1pvdekr" />
     <bpmn:textAnnotation id="TextAnnotation_17kbf70">
       <bpmn:text>Was passiert wenn ein Paket nicht angenommen werden kann?
 
 Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
     </bpmn:textAnnotation>
+    <bpmn:association id="Association_155vig9" sourceRef="Activity_1wx3agq" targetRef="TextAnnotation_0yqgrcg" />
+    <bpmn:association id="Association_05xkufw" sourceRef="Activity_0t8wm4l" targetRef="TextAnnotation_1pvdekr" />
+    <bpmn:association id="Association_0649h4d" sourceRef="CreatePackageLabel" targetRef="TextAnnotation_14l7tlm" />
     <bpmn:association id="Association_0bv90zd" sourceRef="Activity_1gex47f" targetRef="TextAnnotation_17kbf70" />
+    <bpmn:association id="Association_1cukzyz" sourceRef="Activity_022fg08" targetRef="TextAnnotation_0enxoij" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_18kb3ct">
       <bpmndi:BPMNShape id="Participant_0yr31v2_di" bpmnElement="Participant_0yr31v2" isHorizontal="true">
-        <dc:Bounds x="340" y="100" width="2238" height="530" />
+        <dc:Bounds x="340" y="280" width="2238" height="530" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_1mxpb44_di" bpmnElement="Lane_1mxpb44" isHorizontal="true">
-        <dc:Bounds x="370" y="395" width="2208" height="235" />
+        <dc:Bounds x="370" y="575" width="2208" height="235" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_0j32819_di" bpmnElement="Lane_0j32819" isHorizontal="true">
-        <dc:Bounds x="370" y="270" width="2208" height="125" />
+        <dc:Bounds x="370" y="450" width="2208" height="125" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_0gypzwc_di" bpmnElement="Lane_0gypzwc" isHorizontal="true">
-        <dc:Bounds x="370" y="100" width="2208" height="170" />
+        <dc:Bounds x="370" y="280" width="2208" height="170" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_14l7tlm_di" bpmnElement="TextAnnotation_14l7tlm">
+        <dc:Bounds x="690" y="460" width="100" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0yqgrcg_di" bpmnElement="TextAnnotation_0yqgrcg">
+        <dc:Bounds x="1910" y="390" width="100" height="54" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0enxoij_di" bpmnElement="TextAnnotation_0enxoij">
+        <dc:Bounds x="1630" y="691" width="100" height="30" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1pvdekr_di" bpmnElement="TextAnnotation_1pvdekr">
+        <dc:Bounds x="1990" y="670" width="100" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_17kbf70_di" bpmnElement="TextAnnotation_17kbf70">
+        <dc:Bounds x="890" y="624" width="100" height="152" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_06fjnen_di" bpmnElement="Flow_06fjnen">
-        <di:waypoint x="1180" y="338" />
-        <di:waypoint x="1180" y="415" />
+        <di:waypoint x="1180" y="518" />
+        <di:waypoint x="1180" y="595" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_03evzfw_di" bpmnElement="Flow_03evzfw">
-        <di:waypoint x="1125" y="320" />
-        <di:waypoint x="1162" y="320" />
+        <di:waypoint x="1125" y="500" />
+        <di:waypoint x="1162" y="500" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0yk9kmw_di" bpmnElement="Flow_0yk9kmw">
-        <di:waypoint x="1050" y="320" />
-        <di:waypoint x="1075" y="320" />
+        <di:waypoint x="1050" y="500" />
+        <di:waypoint x="1075" y="500" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0fsrzi1_di" bpmnElement="Flow_0fsrzi1">
-        <di:waypoint x="2325" y="470" />
-        <di:waypoint x="2442" y="470" />
+        <di:waypoint x="2325" y="650" />
+        <di:waypoint x="2442" y="650" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1leudx5_di" bpmnElement="Flow_1leudx5">
-        <di:waypoint x="2160" y="470" />
-        <di:waypoint x="2275" y="470" />
+        <di:waypoint x="2160" y="650" />
+        <di:waypoint x="2275" y="650" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2199" y="452" width="38" height="14" />
+          <dc:Bounds x="2199" y="632" width="38" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0y8obho_di" bpmnElement="Flow_0y8obho">
-        <di:waypoint x="2300" y="495" />
-        <di:waypoint x="2300" y="540" />
-        <di:waypoint x="2110" y="540" />
-        <di:waypoint x="2110" y="510" />
+        <di:waypoint x="2300" y="675" />
+        <di:waypoint x="2300" y="720" />
+        <di:waypoint x="2110" y="720" />
+        <di:waypoint x="2110" y="690" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2177" y="546" width="57" height="27" />
+          <dc:Bounds x="2177" y="726" width="57" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_142jxyj_di" bpmnElement="Flow_142jxyj">
-        <di:waypoint x="1970" y="470" />
-        <di:waypoint x="2060" y="470" />
+        <di:waypoint x="1970" y="650" />
+        <di:waypoint x="2060" y="650" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0l1h5zy_di" bpmnElement="Flow_0l1h5zy">
-        <di:waypoint x="1890" y="375" />
-        <di:waypoint x="1890" y="430" />
+        <di:waypoint x="1890" y="555" />
+        <di:waypoint x="1890" y="610" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1tqvwy9_di" bpmnElement="Flow_1tqvwy9">
-        <di:waypoint x="1705" y="470" />
-        <di:waypoint x="1830" y="470" />
-        <di:waypoint x="1830" y="375" />
+        <di:waypoint x="1705" y="650" />
+        <di:waypoint x="1830" y="650" />
+        <di:waypoint x="1830" y="555" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_04xw1ev_di" bpmnElement="Flow_04xw1ev">
-        <di:waypoint x="1680" y="445" />
-        <di:waypoint x="1680" y="320" />
-        <di:waypoint x="1460" y="320" />
+        <di:waypoint x="1680" y="625" />
+        <di:waypoint x="1680" y="500" />
+        <di:waypoint x="1460" y="500" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1604" y="326" width="71" height="40" />
+          <dc:Bounds x="1604" y="506" width="71" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_12kn09f_di" bpmnElement="Flow_12kn09f">
-        <di:waypoint x="1590" y="470" />
-        <di:waypoint x="1655" y="470" />
+        <di:waypoint x="1590" y="650" />
+        <di:waypoint x="1655" y="650" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_16aafjw_di" bpmnElement="Flow_16aafjw">
-        <di:waypoint x="1460" y="350" />
-        <di:waypoint x="1540" y="350" />
-        <di:waypoint x="1540" y="430" />
+        <di:waypoint x="1460" y="530" />
+        <di:waypoint x="1540" y="530" />
+        <di:waypoint x="1540" y="610" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1xqwgob_di" bpmnElement="Flow_1xqwgob">
-        <di:waypoint x="1365" y="455" />
-        <di:waypoint x="1390" y="455" />
-        <di:waypoint x="1390" y="375" />
+        <di:waypoint x="1365" y="635" />
+        <di:waypoint x="1390" y="635" />
+        <di:waypoint x="1390" y="555" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_14h6aga_di" bpmnElement="Flow_14h6aga">
-        <di:waypoint x="1230" y="455" />
-        <di:waypoint x="1315" y="455" />
+        <di:waypoint x="1230" y="635" />
+        <di:waypoint x="1315" y="635" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1237" y="437" width="74" height="14" />
+          <dc:Bounds x="1237" y="617" width="74" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0pwjax2_di" bpmnElement="Flow_0pwjax2">
-        <di:waypoint x="1340" y="480" />
-        <di:waypoint x="1340" y="540" />
-        <di:waypoint x="1190" y="540" />
-        <di:waypoint x="1190" y="495" />
+        <di:waypoint x="1340" y="660" />
+        <di:waypoint x="1340" y="720" />
+        <di:waypoint x="1190" y="720" />
+        <di:waypoint x="1190" y="675" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1237" y="506" width="57" height="27" />
+          <dc:Bounds x="1237" y="686" width="57" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1teu2n3_di" bpmnElement="Flow_1teu2n3">
-        <di:waypoint x="900" y="205" />
-        <di:waypoint x="1000" y="205" />
-        <di:waypoint x="1000" y="280" />
+        <di:waypoint x="900" y="385" />
+        <di:waypoint x="1000" y="385" />
+        <di:waypoint x="1000" y="460" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1wrdqch_di" bpmnElement="Flow_1wrdqch">
-        <di:waypoint x="850" y="295" />
-        <di:waypoint x="850" y="245" />
+        <di:waypoint x="850" y="475" />
+        <di:waypoint x="850" y="425" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ydauyr_di" bpmnElement="Flow_0ydauyr">
-        <di:waypoint x="705" y="455" />
-        <di:waypoint x="850" y="455" />
-        <di:waypoint x="850" y="375" />
+        <di:waypoint x="705" y="635" />
+        <di:waypoint x="850" y="635" />
+        <di:waypoint x="850" y="555" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="756" y="437" width="44" height="14" />
+          <dc:Bounds x="756" y="617" width="44" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1hdcu53_di" bpmnElement="Flow_1hdcu53">
-        <di:waypoint x="680" y="430" />
-        <di:waypoint x="680" y="335" />
-        <di:waypoint x="600" y="335" />
+        <di:waypoint x="680" y="610" />
+        <di:waypoint x="680" y="515" />
+        <di:waypoint x="600" y="515" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="687" y="361" width="86" height="27" />
+          <dc:Bounds x="687" y="541" width="86" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1juk413_di" bpmnElement="Flow_1juk413">
-        <di:waypoint x="600" y="455" />
-        <di:waypoint x="655" y="455" />
+        <di:waypoint x="600" y="635" />
+        <di:waypoint x="655" y="635" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_14hw7xu_di" bpmnElement="Flow_14hw7xu">
-        <di:waypoint x="550" y="375" />
-        <di:waypoint x="550" y="415" />
+        <di:waypoint x="550" y="555" />
+        <di:waypoint x="550" y="595" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0mn9h98_di" bpmnElement="Flow_0mn9h98">
-        <di:waypoint x="550" y="245" />
-        <di:waypoint x="550" y="295" />
+        <di:waypoint x="550" y="425" />
+        <di:waypoint x="550" y="475" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1ib9xlp_di" bpmnElement="Flow_1ib9xlp">
-        <di:waypoint x="445" y="205" />
-        <di:waypoint x="500" y="205" />
+        <di:waypoint x="445" y="385" />
+        <di:waypoint x="500" y="385" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
-        <dc:Bounds x="409" y="187" width="36" height="36" />
+        <dc:Bounds x="409" y="367" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_04z2r27_di" bpmnElement="CheckPackageData" isMarkerVisible="true">
-        <dc:Bounds x="655" y="430" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0fnghpw_di" bpmnElement="Activity_0fnghpw">
-        <dc:Bounds x="1360" y="295" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_022fg08_di" bpmnElement="Activity_022fg08">
-        <dc:Bounds x="1490" y="430" width="100" height="80" />
+        <dc:Bounds x="655" y="610" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_05ttn8h_di" bpmnElement="Gateway_05ttn8h" isMarkerVisible="true">
-        <dc:Bounds x="1655" y="445" width="50" height="50" />
+        <dc:Bounds x="1655" y="625" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1wx3agq_di" bpmnElement="Activity_1wx3agq">
-        <dc:Bounds x="1810" y="295" width="100" height="80" />
+        <dc:Bounds x="1810" y="475" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0t8wm4l_di" bpmnElement="Activity_0t8wm4l">
-        <dc:Bounds x="1870" y="430" width="100" height="80" />
+        <dc:Bounds x="1870" y="610" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_032plv6_di" bpmnElement="Activity_032plv6">
-        <dc:Bounds x="2060" y="430" width="100" height="80" />
+        <dc:Bounds x="2060" y="610" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1fcnwns_di" bpmnElement="Gateway_1fcnwns" isMarkerVisible="true">
-        <dc:Bounds x="2275" y="445" width="50" height="50" />
+        <dc:Bounds x="2275" y="625" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_17o59jk_di" bpmnElement="Event_17o59jk">
-        <dc:Bounds x="2442" y="452" width="36" height="36" />
+        <dc:Bounds x="2442" y="632" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_09hb7b4_di" bpmnElement="AcceptPackageData">
-        <dc:Bounds x="500" y="165" width="100" height="80" />
+        <dc:Bounds x="500" y="345" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_15yt4f2_di" bpmnElement="ComputePackageData">
-        <dc:Bounds x="500" y="295" width="100" height="80" />
+        <dc:Bounds x="500" y="475" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0q3duiz_di" bpmnElement="CheckData">
-        <dc:Bounds x="500" y="415" width="100" height="80" />
+        <dc:Bounds x="500" y="595" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0dv895j_di" bpmnElement="CreatePackageLabel">
-        <dc:Bounds x="800" y="295" width="100" height="80" />
+        <dc:Bounds x="800" y="475" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0yh5otb_di" bpmnElement="WaitForPackageConfirmation">
-        <dc:Bounds x="800" y="165" width="100" height="80" />
+        <dc:Bounds x="800" y="345" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1cjtg3a_di" bpmnElement="SavePackageData">
-        <dc:Bounds x="950" y="280" width="100" height="80" />
+        <dc:Bounds x="950" y="460" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_19vl40r_di" bpmnElement="Gateway_0bpibli">
-        <dc:Bounds x="1075" y="295" width="50" height="50" />
+        <dc:Bounds x="1075" y="475" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1858bji_di" bpmnElement="Event_1858bji">
-        <dc:Bounds x="1162" y="302" width="36" height="36" />
+        <dc:Bounds x="1162" y="482" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0cyr9ge_di" bpmnElement="Activity_1gex47f">
-        <dc:Bounds x="1130" y="415" width="100" height="80" />
+        <dc:Bounds x="1130" y="595" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_08eysr8_di" bpmnElement="Gateway_08eysr8" isMarkerVisible="true">
-        <dc:Bounds x="1315" y="430" width="50" height="50" />
+        <dc:Bounds x="1315" y="610" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_14l7tlm_di" bpmnElement="TextAnnotation_14l7tlm">
-        <dc:Bounds x="690" y="280" width="100" height="40" />
+      <bpmndi:BPMNShape id="Activity_1m7lgpt_di" bpmnElement="Activity_022fg08">
+        <dc:Bounds x="1490" y="610" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0yqgrcg_di" bpmnElement="TextAnnotation_0yqgrcg">
-        <dc:Bounds x="1910" y="210" width="100" height="54" />
+      <bpmndi:BPMNShape id="Activity_1i9s79n_di" bpmnElement="Activity_0fnghpw">
+        <dc:Bounds x="1360" y="475" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0enxoij_di" bpmnElement="TextAnnotation_0enxoij">
-        <dc:Bounds x="1630" y="511" width="100" height="30" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_1pvdekr_di" bpmnElement="TextAnnotation_1pvdekr">
-        <dc:Bounds x="1990" y="490" width="100" height="40" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_17kbf70_di" bpmnElement="TextAnnotation_17kbf70">
-        <dc:Bounds x="890" y="444" width="100" height="152" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Association_0n5f4v1_di" bpmnElement="Association_0n5f4v1">
-        <di:waypoint x="500" y="328" />
-        <di:waypoint x="280" y="300" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_0649h4d_di" bpmnElement="Association_0649h4d">
-        <di:waypoint x="800" y="317" />
-        <di:waypoint x="790" y="313" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Association_155vig9_di" bpmnElement="Association_155vig9">
-        <di:waypoint x="1896" y="295" />
-        <di:waypoint x="1925" y="264" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_1cukzyz_di" bpmnElement="Association_1cukzyz">
-        <di:waypoint x="1590" y="490" />
-        <di:waypoint x="1643" y="511" />
+        <di:waypoint x="1896" y="475" />
+        <di:waypoint x="1925" y="444" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Association_05xkufw_di" bpmnElement="Association_05xkufw">
-        <di:waypoint x="1970" y="485" />
-        <di:waypoint x="1990" y="490" />
+        <di:waypoint x="1970" y="665" />
+        <di:waypoint x="1990" y="670" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0649h4d_di" bpmnElement="Association_0649h4d">
+        <di:waypoint x="800" y="497" />
+        <di:waypoint x="790" y="493" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Association_0bv90zd_di" bpmnElement="Association_0bv90zd">
-        <di:waypoint x="1130" y="456" />
-        <di:waypoint x="990" y="458" />
+        <di:waypoint x="1130" y="636" />
+        <di:waypoint x="990" y="638" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1cukzyz_di" bpmnElement="Association_1cukzyz">
+        <di:waypoint x="1590" y="670" />
+        <di:waypoint x="1643" y="691" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="TextAnnotation_1ffrwfs_di" bpmnElement="TextAnnotation_1ffrwfs">
-        <dc:Bounds x="180" y="278" width="100" height="124" />
+        <dc:Bounds x="180" y="458" width="100" height="124" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1ad4vu5_di" bpmnElement="TextAnnotation_1ad4vu5">
+        <dc:Bounds x="1337" y="80" width="244" height="180" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_0n5f4v1_di" bpmnElement="Association_0n5f4v1">
+        <di:waypoint x="500" y="508" />
+        <di:waypoint x="280" y="480" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
