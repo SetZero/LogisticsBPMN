@@ -26,7 +26,7 @@
       <bpmn:text>Zielort</bpmn:text>
     </bpmn:textAnnotation>
   </bpmn:collaboration>
-  <bpmn:process id="PaketProzess" isExecutable="true">
+  <bpmn:process id="PaketProzess" name="Paket Versenden Prozess" isExecutable="true">
     <bpmn:laneSet id="LaneSet_0haikid">
       <bpmn:lane id="Fahrer" name="Fahrer">
         <bpmn:flowNodeRef>CheckPackageData</bpmn:flowNodeRef>

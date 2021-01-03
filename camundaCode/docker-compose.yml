@@ -3,17 +3,11 @@ version: '3.1'
 services:
   camunda:
     container_name: camunda
-    image: camunda/camunda-bpm-platform
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - 8080:8080
     volumes:
       - ./config/default.yml:/camunda/configuration/default.yml
       - ./config/web.xml:/camunda/webapps/engine-rest/WEB-INF/web.xml
-
-  fakeicms:
-    container_name: fakeicms
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - 80:80
