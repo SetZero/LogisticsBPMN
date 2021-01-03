@@ -11,3 +11,13 @@ services:
     volumes:
       - ./config/default.yml:/camunda/configuration/default.yml
       - ./config/web.xml:/camunda/webapps/engine-rest/WEB-INF/web.xml
+  postgres:
+    container_name: postgres
+    build:
+      context: .
+      dockerfile: db.Dockerfile
+    restart: always
+    # This is for development only!
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=hackme
