@@ -1,16 +1,6 @@
 version: '3.1'
 
 services:
-  camunda:
-    container_name: camunda
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - 8080:8080
-    volumes:
-      - ./config/default.yml:/camunda/configuration/default.yml
-      - ./config/web.xml:/camunda/webapps/engine-rest/WEB-INF/web.xml
   postgres:
     container_name: postgres
     build:
@@ -21,3 +11,22 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=hackme
+  camunda:
+    container_name: camunda
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+      - ./config/default.yml:/camunda/configuration/default.yml
+      - ./config/web.xml:/camunda/webapps/engine-rest/WEB-INF/web.xml
+    environment:
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=postgresql
+      - DB_DRIVER=org.postgresql.Driver
+      - DB_URL=jdbc:postgresql://postgres:5432/process_engine
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=hackme
+      - SKIP_DB_CONFIG=false
+      - WAIT_FOR=postgres:5432
+      - WAIT_FOR_TIMEOUT=60
