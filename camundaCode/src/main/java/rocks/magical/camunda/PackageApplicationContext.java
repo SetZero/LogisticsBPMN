@@ -1,6 +1,10 @@
 package rocks.magical.camunda;
 
+import org.camunda.bpm.application.impl.EmbeddedProcessApplication;
+import org.camunda.bpm.application.impl.EmbeddedProcessApplicationReferenceImpl;
 import org.camunda.bpm.engine.*;
+import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.camunda.bpm.engine.impl.cfg.ProcessEnginePlugin;
 import org.camunda.bpm.engine.spring.ProcessEngineFactoryBean;
 import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,8 +16,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.camunda.connect.plugin.impl.ConnectProcessEnginePlugin;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Configuration
 public class PackageApplicationContext {
@@ -86,6 +94,7 @@ public class PackageApplicationContext {
 
     @Bean
     public ManagementService managementService(ProcessEngine processEngine) {
+        //processEngine.getManagementService().registerProcessApplication("packet_versenden", new EmbeddedProcessApplication().getReference());
         return processEngine.getManagementService();
     }
 
@@ -101,6 +110,8 @@ public class PackageApplicationContext {
         configuration.setTransactionManager(transactionManager);
         configuration.setDatabaseSchemaUpdate("true");
         configuration.setJobExecutorActivate(false);
+        //configuration.setJobExecutorDeploymentAware(true);
+        configuration.setProcessEnginePlugins(Collections.singletonList(new ConnectProcessEnginePlugin()));
         configuration.setDeploymentResources(deploymentResources);
 
         return configuration;
@@ -111,8 +122,9 @@ public class PackageApplicationContext {
         return new Starter();
     }
 
-    @Bean
+    @Bean("requestPackagesService")
     public RequestPackages requestPackagesService() {
+        System.out.println("Y u no work?");
         return new RequestPackages();
     }
 }
