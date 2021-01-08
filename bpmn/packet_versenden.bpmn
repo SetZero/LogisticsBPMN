@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_15zfl89" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.3.0">
-  <bpmn:collaboration id="Collaboration_18kb3ct">
+  <bpmn:collaboration id="packageProcess">
     <bpmn:participant id="PaketVersenden" name="Paket Versenden" processRef="PaketProzess" />
     <bpmn:textAnnotation id="TextAnnotation_1ffrwfs">
       <bpmn:text>- Ermittlung von Standort
@@ -105,7 +105,7 @@
       <bpmn:incoming>Flow_1ib9xlp</bpmn:incoming>
       <bpmn:outgoing>Flow_0mn9h98</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ComputePackageData" name="Paketdaten ermitteln" camunda:delegateExpression="${requestPackagesDelegate}">
+    <bpmn:serviceTask id="ComputePackageData" name="Paketdaten ermitteln" camunda:delegateExpression="${requestPackagesService}">
       <bpmn:incoming>Flow_0mn9h98</bpmn:incoming>
       <bpmn:incoming>Flow_1hdcu53</bpmn:incoming>
       <bpmn:outgoing>Flow_14hw7xu</bpmn:outgoing>
@@ -275,7 +275,7 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
     <bpmn:association id="Association_1cukzyz" sourceRef="Activity_022fg08" targetRef="TextAnnotation_0enxoij" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_18kb3ct">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="packageProcess">
       <bpmndi:BPMNShape id="Participant_0yr31v2_di" bpmnElement="PaketVersenden" isHorizontal="true">
         <dc:Bounds x="340" y="280" width="2238" height="530" />
       </bpmndi:BPMNShape>

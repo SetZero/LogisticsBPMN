@@ -16,6 +16,7 @@
 
     <properties>
         <camunda.version>7.11.0</camunda.version>
+        <spring.version>5.2.8.RELEASE</spring.version>
         <!--
         Adjust if you want to use Camunda Enterprise Edition (EE):
         <rocks.magical.camunda.version>7.11.0-ee</rocks.magical.camunda.version>
@@ -36,10 +37,70 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${spring.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <!-- process engine, needs to be 'provided' because it's already a shared library in the container -->
+            <groupId>org.camunda.bpm</groupId>
+            <artifactId>camunda-engine</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.camunda.bpm</groupId>
+            <artifactId>camunda-engine-spring</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <!-- AssertJ Testing Library -->
+            <groupId>org.camunda.bpm.extension</groupId>
+            <artifactId>camunda-bpm-assert</artifactId>
+            <version>1.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <!-- Used to generate test coverage reports, see https://github.com/camunda/camunda-consulting/tree/master/snippets/camunda-bpm-process-test-coverage -->
+            <groupId>org.camunda.bpm.extension</groupId>
+            <artifactId>camunda-bpm-process-test-coverage</artifactId>
+            <version>0.3.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.200</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Required to use Spin dataformat support in unit tests -->
+        <dependency>
+            <groupId>org.camunda.spin</groupId>
+            <artifactId>camunda-spin-dataformat-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.camunda.bpm</groupId>
+            <artifactId>camunda-engine-plugin-spin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.camunda.bpm</groupId>
+            <artifactId>camunda-engine-plugin-connect</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.camunda.connect</groupId>
             <artifactId>camunda-connect-core</artifactId>
@@ -59,111 +120,6 @@
             <artifactId>camunda-connect-soap-http-client</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.camunda.bpm</groupId>
-            <artifactId>camunda-engine-plugin-connect</artifactId>
-        </dependency>
-
-        <dependency>
-            <!-- process engine, needs to be 'provided' because it's already a shared library in the container -->
-            <groupId>org.camunda.bpm</groupId>
-            <artifactId>camunda-engine</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <!-- AssertJ Testing Library -->
-            <groupId>org.camunda.bpm.extension</groupId>
-            <artifactId>camunda-bpm-assert</artifactId>
-            <version>1.2</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Required to use Spin dataformat support in unit tests -->
-        <dependency>
-            <groupId>org.camunda.spin</groupId>
-            <artifactId>camunda-spin-dataformat-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.camunda.bpm</groupId>
-            <artifactId>camunda-engine-plugin-spin</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Required to use Templates in unit tests -->
-        <dependency>
-            <groupId>org.camunda.template-engines</groupId>
-            <artifactId>camunda-template-engines-freemarker</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.camunda.template-engines</groupId>
-            <artifactId>camunda-template-engines-velocity</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <!-- Needed for InMemoryH2Test -->
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.197</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <!-- Used to generate test coverage reports, see https://github.com/camunda/camunda-consulting/tree/master/snippets/camunda-bpm-process-test-coverage -->
-            <groupId>org.camunda.bpm.extension</groupId>
-            <artifactId>camunda-bpm-process-test-coverage</artifactId>
-            <version>0.3.2</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <!-- use logback as logger -->
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.1.3</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <!-- apache commons logging => slf4j -->
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>1.7.25</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <!--  java util logging => slf4j -->
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-            <version>1.7.25</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.6</version>
-        </dependency>
-
         <!-- Add your own dependencies here, if in compile scope, they are added to the war -->
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -172,21 +128,35 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>javax.persistence-api</artifactId>
-            <version>2.2</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>javax.resource</groupId>
-            <artifactId>javax.resource-api</artifactId>
-            <version>1.7</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jdbc</artifactId>
-            <version>2.4.1</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.7.26</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -221,6 +191,14 @@
                     </tasks>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <webXml>src/main/resources/WEB-INF/web.xml</webXml>
+                    <failOnMissingWebXml>true</failOnMissingWebXml>
+                </configuration>
+            </plugin>
             <!-- Tomcat Maven Plugin
 
             Deploy to Tomcat using:
@@ -246,18 +224,6 @@
                     <username>admin</username>
                     <password>admin</password>
                 </configuration>
-            </plugin>
-            <plugin>
-                <!-- Deploy to JBoss AS7: mvn clean jboss-as:deploy See also: https://docs.jboss.org/jbossas/7/plugins/maven/latest/examples/deployment-example.html -->
-                <groupId>org.jboss.as.plugins</groupId>
-                <artifactId>jboss-as-maven-plugin</artifactId>
-                <version>7.9.Final</version>
-            </plugin>
-            <plugin>
-                <!-- Deploy to Wildfly: mvn clean wildfly:deploy See also: https://docs.jboss.org/wildfly/plugins/maven/latest/examples/deployment-example.html -->
-                <groupId>org.wildfly.plugins</groupId>
-                <artifactId>wildfly-maven-plugin</artifactId>
-                <version>1.2.1.Final</version>
             </plugin>
         </plugins>
     </build>

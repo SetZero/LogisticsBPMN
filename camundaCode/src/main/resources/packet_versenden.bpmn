@@ -105,7 +105,7 @@
       <bpmn:incoming>Flow_1ib9xlp</bpmn:incoming>
       <bpmn:outgoing>Flow_0mn9h98</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ComputePackageData" name="Paketdaten ermitteln" camunda:delegateExpression="${requestPackagesDelegate}">
+    <bpmn:serviceTask id="ComputePackageData" name="Paketdaten ermitteln" camunda:delegateExpression="${requestPackagesService}">
       <bpmn:incoming>Flow_0mn9h98</bpmn:incoming>
       <bpmn:incoming>Flow_1hdcu53</bpmn:incoming>
       <bpmn:outgoing>Flow_14hw7xu</bpmn:outgoing>
