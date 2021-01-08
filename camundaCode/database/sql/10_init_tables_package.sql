@@ -95,6 +95,6 @@ INSERT INTO vehicle (vehicleId, vehicleVolumeM2, vehicletype, vehicleDesc, maxWe
 ('1', '100', 'CAR', 'Koenigsegg Agera RS', '100'),
 ('2', '200', 'CAR', 'Bugatti Veyron 16.4 Super Sport', '100'),
 ('3', '300', 'CAR', 'Bugatti Chiron', '150'),
-('4', '500', 'BOAT', 'Spirit of Australia', '400'),
-('5', '400', 'PLANE', 'Lockheed SR-71 Blackbird', '100'),
+('4', '500', 'SHIP', 'Spirit of Australia', '400'),
+('5', '400', 'PLANE', 'Lockheed SR-71 Blackbird', '100');
 
