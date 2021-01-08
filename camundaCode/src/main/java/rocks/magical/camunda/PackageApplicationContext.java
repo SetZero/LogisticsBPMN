@@ -7,6 +7,8 @@ import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.impl.cfg.ProcessEnginePlugin;
 import org.camunda.bpm.engine.spring.ProcessEngineFactoryBean;
 import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +37,22 @@ public class PackageApplicationContext {
         dataSource.setUsername(System.getenv("DB_USERNAME"));
         dataSource.setPassword(System.getenv("DB_PASSWORD"));
         return dataSource;
+    }
+
+    @Bean("packageDataSource")
+    public DataSource secondaryDataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(System.getenv("DB_DRIVER_PACKAGE_DATA"));
+        dataSource.setUrl(System.getenv("DB_URL_PACKAGE_DATA"));
+        dataSource.setUsername(System.getenv("DB_USERNAME_PACKAGE_DATA"));
+        dataSource.setPassword(System.getenv("DB_PASSWORD_PACKAGE_DATA"));
+        return dataSource;
+    }
+
+    @Bean(name = "jdbcPackage")
+    @Autowired
+    public JdbcTemplate packageJdbcTemplate(@Qualifier("packageDataSource") DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
     }
 
     @Bean(name = "applicationJdbcTemplate")

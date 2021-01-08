@@ -11,6 +11,8 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=hackme
+    ports:
+      - 5432:5432
   camunda:
     container_name: camunda
     build:
@@ -27,6 +29,10 @@ services:
       - DB_URL=jdbc:postgresql://postgres:5432/process_engine
       - DB_USERNAME=postgres
       - DB_PASSWORD=hackme
+      - DB_DRIVER_PACKAGE_DATA=org.postgresql.Driver
+      - DB_URL_PACKAGE_DATA=jdbc:postgresql://postgres:5432/postgres?currentSchema=schema_package
+      - DB_USERNAME_PACKAGE_DATA=postgres
+      - DB_PASSWORD_PACKAGE_DATA=hackme
       - SKIP_DB_CONFIG=false
       - WAIT_FOR=postgres:5432
       - WAIT_FOR_TIMEOUT=60
