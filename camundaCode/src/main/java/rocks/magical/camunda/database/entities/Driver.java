@@ -6,6 +6,9 @@ public class Driver {
     private String lastname;
     private String camundaId;
 
+    public Driver() {
+    }
+
     public Driver(Integer driverId, String firstname, String lastname, String camundaId) {
         this.driverId = driverId;
         this.firstname = firstname;
