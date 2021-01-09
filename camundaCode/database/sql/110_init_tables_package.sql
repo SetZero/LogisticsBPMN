@@ -11,7 +11,7 @@ SET SCHEMA 'schema_package';
 DROP EXTENSION postgis CASCADE;
 CREATE EXTENSION postgis;
 
-
+CREATE SEQUENCE seq_package_pk START 1;
 CREATE TYPE vehicleEnum AS ENUM ('CAR', 'PLANE', 'SHIP');
 
 -- -----------------------------------------------------
@@ -62,8 +62,8 @@ CREATE TABLE IF NOT EXISTS driver
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS package
 (
-    packageId INT     NOT NULL,
-    weigthKg  DECIMAL NULL,
+    packageId INT     NOT NULL DEFAULT nextval('seq_package_pk'),
+    weightKg  DECIMAL NULL,
     volumeM2  DECIMAL NULL,
     PRIMARY KEY (packageId)
 );

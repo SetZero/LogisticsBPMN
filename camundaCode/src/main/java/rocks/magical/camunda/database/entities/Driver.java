@@ -47,4 +47,14 @@ public class Driver {
     public void setCamundaId(String camundaId) {
         this.camundaId = camundaId;
     }
+
+    @Override
+    public String toString() {
+        return "Driver{" +
+                "driverId=" + driverId +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", camundaId='" + camundaId + '\'' +
+                '}';
+    }
 }
