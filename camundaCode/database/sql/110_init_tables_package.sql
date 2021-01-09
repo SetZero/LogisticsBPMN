@@ -50,7 +50,10 @@ CREATE TABLE IF NOT EXISTS driver
     firstname TEXT        NULL,
     lastname  TEXT        NULL,
     camundaId VARCHAR(45) NULL,
-    PRIMARY KEY (driverId)
+    homeBase  INT         NOT NULL,
+    PRIMARY KEY (driverId),
+    FOREIGN KEY (homeBase)
+        REFERENCES packageCenter (centerId)
 );
 
 
@@ -76,6 +79,8 @@ CREATE TABLE IF NOT EXISTS route
     time              TIMESTAMP NOT NULL,
     destination       TEXT      NULL,
     start             TEXT      NULL,
+    isConfirmed       BOOLEAN   NOT NULL,
+    isActive          BOOLEAN   NOT NULL,
     PRIMARY KEY (vehicle_vehicleId, driver_driverId, time),
     CONSTRAINT fk_vehicle_has_driver_vehicle
         FOREIGN KEY (vehicle_vehicleId)
@@ -107,22 +112,23 @@ CREATE TABLE IF NOT EXISTS route_has_package
             ON UPDATE NO ACTION
 );
 
-
-INSERT INTO driver (driverId, firstname, lastname, camundaId)
-VALUES ('1', 'Heinrich ', 'Hertz', '-1'),
-       ('2', 'Isaac ', 'Newton', '-1'),
-       ('3', 'Albert', 'Einstein', '-1'),
-       ('4', 'Max', 'Planck', '-1'),
-       ('5', 'Werner', 'Heisenberg', '-1'),
-       ('6', 'Max', 'Born', '-1'),
-       ('7', 'Wilhelm Conrad', 'Röntgen', '-1'),
-       ('8', 'Marie', 'Curie', '-1');
-
 INSERT INTO packageCenter(centerId, name, location)
 VALUES ('1', 'Berlin Hauptverwaltung', ST_GeomFromText('POINT (13.38282052168627 52.49815983382565)', 4326)),
        ('2', 'Frankfurt Verteilerzentrum', ST_GeomFromText('POINT (8.674983331432774 50.11362977894371)', 4326)),
        ('3', 'Saarbrücken Verteilerzentrum', ST_GeomFromText('POINT (6.99612979628763 49.24030257903976)', 4326)),
-       ('4', 'Speyer Verteilerzentrum', ST_GeomFromText('POINT (8.406333880980359 49.309277440232826)', 4326));
+       ('4', 'München Verteilerzentrum', ST_GeomFromText('POINT (11.594443317082792 48.15346833909564)', 4326)),
+       ('5', 'Stuttgart Verteilerzentrum', ST_GeomFromText('POINT (9.153685947100337 48.7979992045862)', 4326)),
+       ('6', 'Speyer Verteilerzentrum', ST_GeomFromText('POINT (8.406333880980359 49.309277440232826)', 4326));
+
+INSERT INTO driver (driverId, firstname, lastname, camundaId, homeBase)
+VALUES ('1', 'Heinrich ', 'Hertz', '-1', '1'),
+       ('2', 'Isaac ', 'Newton', '-1', '5'),
+       ('3', 'Albert', 'Einstein', '-1', '2'),
+       ('4', 'Max', 'Planck', '-1', '2'),
+       ('5', 'Werner', 'Heisenberg', '-1', '4'),
+       ('6', 'Max', 'Born', '-1', '3'),
+       ('7', 'Wilhelm Conrad', 'Röntgen', '-1', '3'),
+       ('8', 'Marie', 'Curie', '-1', '4');
 
 INSERT INTO vehicle (vehicleId, vehicleVolumeM2, vehicletype, vehicleDesc, maxWeightKg, packageCenter_centerId)
 VALUES ('1', '100', 'CAR', 'Koenigsegg Agera RS', '100', '1'),

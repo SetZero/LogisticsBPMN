@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import rocks.magical.camunda.database.entities.Driver;
 import rocks.magical.camunda.database.entities.PackageCenter;
+import rocks.magical.camunda.database.utils.PackageUtil;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Type;
@@ -18,9 +19,8 @@ import java.util.Map;
 
 @Component
 public class RequestPackages implements JavaDelegate {
-    @Qualifier("jdbcPackage")
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private PackageUtil packageUtil;
 
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
@@ -30,22 +30,8 @@ public class RequestPackages implements JavaDelegate {
         Map<String, Integer> dimensions = (Map<String, Integer>) delegateExecution.getVariable("packageDimensions");
 
 
-        if(jdbcTemplate != null) {
-            PackageCenter packageCenter = getNearestPackageCenter(location);
-            System.out.println(packageCenter);
-        }
+        PackageCenter packageCenter = packageUtil.getNearestPackageCenter(location);
+        System.out.println(packageCenter);
         System.out.println("weight:" + weight + ", location: " + location + ", dimensions: " + dimensions);
-    }
-
-    private PackageCenter getNearestPackageCenter(String location) {
-        String pointLocation = "POINT(" + location + ")";
-        PackageCenter pkg = null;
-        List<PackageCenter> packageCenter = jdbcTemplate.query("SELECT centerId, name, ST_AsText(location) FROM packageCenter ORDER BY ST_Distance(location, ST_GeomFromText(?, 4326)) LIMIT 1",
-                ps -> ps.setString(1, pointLocation),
-                (rs, i) -> new PackageCenter(rs.getInt(1), rs.getString(2), rs.getString(3)));
-        if(packageCenter.size() > 0) {
-            pkg = packageCenter.get(0);
-        }
-        return pkg;
     }
 }

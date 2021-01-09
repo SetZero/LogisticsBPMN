@@ -95,6 +95,7 @@ function App() {
   const [depth, setDepth] = useState(0);
   const [weight, setWeight] = useState(0);
   const [location, setLocation] = useState("");
+  const [targetLocation, setTargetLocation] = useState("11.070280570708459 49.41817197216562");
 
   fetchExternalTasks()
     .then(e => e.json())
@@ -143,6 +144,13 @@ function App() {
               Abholungsort:
               <input type="text" value={location} onChange={(event) => handleChange(setLocation, event)} placeholder="Ort" readOnly />
               <button onClick={() => locateMe(setLocation)}>Lokalisieren</button>
+            </label>
+          </div>
+
+          <div>
+            <label>
+              Lieferort:
+              <input type="text" value={targetLocation} onChange={(event) => handleChange(setTargetLocation, event)} placeholder="Ort" readOnly />
             </label>
           </div>
           <input type="submit" value="Abschicken" />

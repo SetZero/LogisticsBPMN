@@ -112,7 +112,6 @@ public class PackageApplicationContext {
 
     @Bean
     public ManagementService managementService(ProcessEngine processEngine) {
-        //processEngine.getManagementService().registerProcessApplication("packet_versenden", new EmbeddedProcessApplication().getReference());
         return processEngine.getManagementService();
     }
 
@@ -142,7 +141,6 @@ public class PackageApplicationContext {
 
     @Bean("requestPackagesService")
     public RequestPackages requestPackagesService() {
-        System.out.println("Y u no work?");
         return new RequestPackages();
     }
 }
