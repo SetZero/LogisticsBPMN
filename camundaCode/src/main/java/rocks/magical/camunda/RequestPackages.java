@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import rocks.magical.camunda.database.entities.Driver;
+import rocks.magical.camunda.database.entities.PackageCenter;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Type;
@@ -27,12 +28,24 @@ public class RequestPackages implements JavaDelegate {
         String weight = delegateExecution.getVariable("weight").toString();
         String location = delegateExecution.getVariable("location").toString();
         Map<String, Integer> dimensions = (Map<String, Integer>) delegateExecution.getVariable("packageDimensions");
-        System.out.println(dimensions);
+
 
         if(jdbcTemplate != null) {
-            List<Driver> res = jdbcTemplate.query("SELECT * FROM driver", (rs, rowNum) -> new Driver(rs.getInt("driverId"), rs.getString("firstname"), rs.getString("lastname"), rs.getString("camundaId")));
-            System.out.println(res);
+            PackageCenter packageCenter = getNearestPackageCenter(location);
+            System.out.println(packageCenter);
         }
         System.out.println("weight:" + weight + ", location: " + location + ", dimensions: " + dimensions);
+    }
+
+    private PackageCenter getNearestPackageCenter(String location) {
+        String pointLocation = "POINT(" + location + ")";
+        PackageCenter pkg = null;
+        List<PackageCenter> packageCenter = jdbcTemplate.query("SELECT centerId, name, ST_AsText(location) FROM packageCenter ORDER BY ST_Distance(location, ST_GeomFromText(?, 4326)) LIMIT 1",
+                ps -> ps.setString(1, pointLocation),
+                (rs, i) -> new PackageCenter(rs.getInt(1), rs.getString(2), rs.getString(3)));
+        if(packageCenter.size() > 0) {
+            pkg = packageCenter.get(0);
+        }
+        return pkg;
     }
 }
