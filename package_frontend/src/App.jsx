@@ -45,7 +45,7 @@ async function handleReserve() {
   }
 }
 
-async function completeTask(taskId, width, height, depth, weight) {
+async function completeTask(taskId, width, height, depth, weight, location) {
   var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
 
@@ -53,10 +53,11 @@ async function completeTask(taskId, width, height, depth, weight) {
     "workerId": workerId, "variables": {
       "packageDimensions": {
         "value": {
-          'w': {"value": width}, 'h':  {"value": height}, 'd':  {"value": depth}
+          'w': width, 'h': height, 'd':  depth
         }
       },
-      "weight": { "value": weight }
+      "weight": { "value": weight },
+      "location": { "value": location },
     }
   });
 
@@ -70,15 +71,21 @@ async function completeTask(taskId, width, height, depth, weight) {
   return fetch("http://localhost:8080/engine-rest/external-task/" + taskId + "/complete", requestOptions);
 }
 
-function handleCompleteTask(event, width, height, depth, weight) {
+function handleCompleteTask(event, width, height, depth, weight, location) {
   event.preventDefault();
   handleReserve().then(() => {
     fetchReserveTask().then(response => response.json())
       .then(result => {
         console.log(result);
-        completeTask(currentId, width, height, depth, weight).then(e => console.log(e)).catch(e => console.error(e))
+        completeTask(currentId, width, height, depth, weight, location).then(e => console.log(e)).catch(e => console.error(e))
       })
       .catch(error => console.log('error', error));
+  });
+}
+
+function locateMe(writeTo) {
+  navigator.geolocation.getCurrentPosition((loc) => {
+    writeTo(loc.coords.longitude + " " + loc.coords.latitude);
   });
 }
 
@@ -87,6 +94,7 @@ function App() {
   const [height, setHeight] = useState(0);
   const [depth, setDepth] = useState(0);
   const [weight, setWeight] = useState(0);
+  const [location, setLocation] = useState("");
 
   fetchExternalTasks()
     .then(e => e.json())
@@ -110,7 +118,7 @@ function App() {
           <div>Gewicht: {weight} m³</div>
           <div><strong>Geschätzte Kosten: </strong> {Math.max(width*height*depth / 1000, weight)} € </div>
         </div>
-        <form onSubmit={event => handleCompleteTask(event, width, height, depth, weight)}>
+        <form onSubmit={event => handleCompleteTask(event, width.valueOf(), height.valueOf(), depth.valueOf(), weight.valueOf(), location.valueOf())}>
 
           <div>
             <label>
@@ -125,8 +133,16 @@ function App() {
           <div>
             <label>
               Gewicht:
-              <input type="text" value={weight} onChange={(event) => handleChange(setWeight, event)} placeholder="Weite" />
+              <input type="text" value={weight} onChange={(event) => handleChange(setWeight, event)} placeholder="Gewicht" />
               <span> kg</span>
+            </label>
+          </div>
+
+          <div>
+            <label>
+              Abholungsort:
+              <input type="text" value={location} onChange={(event) => handleChange(setLocation, event)} placeholder="Ort" readOnly />
+              <button onClick={() => locateMe(setLocation)}>Lokalisieren</button>
             </label>
           </div>
           <input type="submit" value="Abschicken" />

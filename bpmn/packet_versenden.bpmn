@@ -92,12 +92,13 @@
     <bpmn:serviceTask id="AcceptPackageData" name="elekronische Ankündigung&#10;beantragen" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:type="external" camunda:topic="createPackage">
       <bpmn:extensionElements>
         <camunda:inputOutput>
+          <camunda:outputParameter name="location">${location}</camunda:outputParameter>
           <camunda:outputParameter name="weight">${weight}</camunda:outputParameter>
           <camunda:outputParameter name="packageDimensions">
             <camunda:map>
-              <camunda:entry key="w">${packageDimensions.width}</camunda:entry>
-              <camunda:entry key="h">${packageDimensions.height}</camunda:entry>
-              <camunda:entry key="d">${packageDimensions.depth}</camunda:entry>
+              <camunda:entry key="w">${packageDimensions.w}</camunda:entry>
+              <camunda:entry key="h">${packageDimensions.h}</camunda:entry>
+              <camunda:entry key="d">${packageDimensions.d}</camunda:entry>
             </camunda:map>
           </camunda:outputParameter>
         </camunda:inputOutput>
