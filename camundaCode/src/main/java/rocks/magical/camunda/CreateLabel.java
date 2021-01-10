@@ -12,6 +12,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import rocks.magical.camunda.database.utils.PackageUtil;
+import rocks.magical.camunda.helper.Base64Image;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -51,7 +52,7 @@ public class CreateLabel implements JavaDelegate {
         System.out.println("Called create Label: \n" + packageCenter + "\nprice: " + price);
 
         String barcode = generateBarcode(routeId);
-        // execution.setVariable("barcode", barcode); <- todo: camunda only accepts up to 4000 chars
+        execution.setVariable("barcode", new Base64Image(barcode, "png")); // <- you can't be serious, camunda?!
         execution.setVariable("price", price);
     }
 

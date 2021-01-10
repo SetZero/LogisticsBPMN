@@ -21,6 +21,7 @@ public class RequestPackages implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
+        //TODO: Check if user actually has permission to do this
         String weight = delegateExecution.getVariable("weight").toString();
         String startLocation = delegateExecution.getVariable("location").toString();
         Map<String, Integer> dimensions = (Map<String, Integer>) delegateExecution.getVariable("packageDimensions");
