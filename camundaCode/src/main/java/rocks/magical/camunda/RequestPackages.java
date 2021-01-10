@@ -1,6 +1,7 @@
 package rocks.magical.camunda;
 
 import com.google.gson.Gson;
+import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +17,21 @@ import java.util.Map;
 @Component
 public class RequestPackages implements JavaDelegate {
     @Autowired
+    private RuntimeService runtimeService;
+
+    @Autowired
     private PackageUtil packageUtil;
 
     Gson gson = new Gson();
 
+    private void expectNextPackage() {
+        runtimeService.createSignalEvent("expectNextPackage")
+                .send();
+    }
+
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
-        //TODO: Check if user actually has permission to do this
+        expectNextPackage();
         String weight = delegateExecution.getVariable("weight").toString();
         String startLocation = delegateExecution.getVariable("location").toString();
         String targetLocation = delegateExecution.getVariable("targetLocation").toString();

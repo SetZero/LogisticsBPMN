@@ -39,9 +39,9 @@
         <bpmn:flowNodeRef>Activity_0fnghpw</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Absender" name="Absender">
-        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>AcceptPackageData</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>WaitForPackageConfirmation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:sequenceFlow id="Flow_102seqj" name="IMPOSSIBLE TASK" sourceRef="CheckPackageData" targetRef="Event_0q1563q">
@@ -175,12 +175,7 @@
       <bpmn:incoming>Flow_0yk9kmw</bpmn:incoming>
       <bpmn:outgoing>Flow_03evzfw</bpmn:outgoing>
     </bpmn:eventBasedGateway>
-    <bpmn:serviceTask id="SavePackageData" name="Speichere Sendungsdaten">
-      <bpmn:extensionElements>
-        <camunda:connector>
-          <camunda:connectorId>http-connector</camunda:connectorId>
-        </camunda:connector>
-      </bpmn:extensionElements>
+    <bpmn:serviceTask id="SavePackageData" name="Speichere Sendungsdaten" camunda:delegateExpression="${generateShipmentData}">
       <bpmn:incoming>Flow_1teu2n3</bpmn:incoming>
       <bpmn:outgoing>Flow_0yk9kmw</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -243,9 +238,6 @@
       <bpmn:outgoing>Flow_04xw1ev</bpmn:outgoing>
       <bpmn:outgoing>Flow_1tqvwy9</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:startEvent id="StartEvent_1">
-      <bpmn:outgoing>Flow_1ib9xlp</bpmn:outgoing>
-    </bpmn:startEvent>
     <bpmn:sequenceFlow id="Flow_041w1u2" name="unerlaubter Zugriff" sourceRef="Gateway_0yrok5o" targetRef="Event_0syw201">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${error == "ILLEGAL_ACCESS"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -253,6 +245,10 @@
       <bpmn:incoming>Flow_041w1u2</bpmn:incoming>
       <bpmn:errorEventDefinition id="ErrorEventDefinition_12j7blx" errorRef="Error_0hf3329" />
     </bpmn:endEvent>
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1ib9xlp</bpmn:outgoing>
+      <bpmn:signalEventDefinition id="SignalEventDefinition_0qtn1ai" signalRef="Signal_1uq3r8f" />
+    </bpmn:startEvent>
     <bpmn:textAnnotation id="TextAnnotation_17kbf70">
       <bpmn:text>Was passiert wenn ein Paket nicht angenommen werden kann?
 
@@ -295,6 +291,7 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
     </bpmn:textAnnotation>
   </bpmn:process>
   <bpmn:error id="Error_0hf3329" name="Error_2taqqnn" errorCode="1" />
+  <bpmn:signal id="Signal_1uq3r8f" name="expectNextPackage" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="packageProcess">
       <bpmndi:BPMNShape id="Participant_0yr31v2_di" bpmnElement="PaketVersenden" isHorizontal="true">
@@ -523,9 +520,6 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
       <bpmndi:BPMNShape id="Gateway_05ttn8h_di" bpmnElement="Gateway_05ttn8h" isMarkerVisible="true">
         <dc:Bounds x="1655" y="625" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
-        <dc:Bounds x="409" y="367" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TextAnnotation_17kbf70_di" bpmnElement="TextAnnotation_17kbf70">
         <dc:Bounds x="890" y="624" width="100" height="152" />
       </bpmndi:BPMNShape>
@@ -549,6 +543,9 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0syw201_di" bpmnElement="Event_0syw201">
         <dc:Bounds x="382" y="617" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0trilfh_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="409" y="367" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Association_1cukzyz_di" bpmnElement="Association_1cukzyz">
         <di:waypoint x="1590" y="670" />
