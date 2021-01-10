@@ -12,6 +12,7 @@ DROP EXTENSION postgis CASCADE;
 CREATE EXTENSION postgis;
 
 CREATE SEQUENCE seq_package_pk START 1;
+CREATE SEQUENCE seq_route_pk START 1;
 CREATE TYPE vehicleEnum AS ENUM ('CAR', 'PLANE', 'SHIP');
 
 -- -----------------------------------------------------
@@ -74,14 +75,15 @@ CREATE TABLE IF NOT EXISTS package
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS route
 (
-    vehicle_vehicleId INT       NOT NULL,
-    driver_driverId   INT       NOT NULL,
-    time              TIMESTAMP NOT NULL,
-    destination       GEOMETRY  NULL,
-    start             GEOMETRY  NULL,
-    isConfirmed       BOOLEAN   NOT NULL,
-    isActive          BOOLEAN   NOT NULL,
-    PRIMARY KEY (vehicle_vehicleId, driver_driverId, time),
+    routeId           INT      NOT NULL DEFAULT nextval('seq_route_pk') PRIMARY KEY,
+    vehicle_vehicleId INT      NOT NULL,
+    driver_driverId   INT      NOT NULL,
+    time              DATE     NOT NULL,
+    destination       GEOMETRY NULL,
+    start             GEOMETRY NULL,
+    isConfirmed       BOOLEAN  NOT NULL,
+    isActive          BOOLEAN  NOT NULL,
+    unique (vehicle_vehicleId, driver_driverId, time),
     CONSTRAINT fk_vehicle_has_driver_vehicle
         FOREIGN KEY (vehicle_vehicleId)
             REFERENCES vehicle (vehicleId)
@@ -96,18 +98,16 @@ CREATE TABLE IF NOT EXISTS route
 
 CREATE TABLE IF NOT EXISTS route_has_package
 (
-    package_packageId       INT       NOT NULL,
-    route_vehicle_vehicleId INT       NOT NULL,
-    route_driver_driverId   INT       NOT NULL,
-    route_time              TIMESTAMP NOT NULL,
-    PRIMARY KEY (package_packageId, route_vehicle_vehicleId, route_driver_driverId, route_time),
+    package_packageId INT NOT NULL,
+    routeId           INT NOT NULL,
+    PRIMARY KEY (package_packageId, routeId),
     FOREIGN KEY (package_packageId)
         REFERENCES package (packageId)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT fk_package_has_route_route1
-        FOREIGN KEY (route_vehicle_vehicleId, route_driver_driverId, route_time)
-            REFERENCES route (vehicle_vehicleId, driver_driverId, time)
+        FOREIGN KEY (routeId)
+            REFERENCES route (routeId)
             ON DELETE NO ACTION
             ON UPDATE NO ACTION
 );

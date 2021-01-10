@@ -146,4 +146,9 @@ public class PackageApplicationContext {
     public RequestPackages requestPackagesService() {
         return new RequestPackages();
     }
+
+    @Bean("createLabelService")
+    public CreateLabel createLabelService() {
+        return new CreateLabel();
+    }
 }

@@ -29,16 +29,18 @@
   <bpmn:process id="PaketProzess" isExecutable="true">
     <bpmn:laneSet id="LaneSet_0haikid">
       <bpmn:lane id="Fahrer" name="Fahrer">
-        <bpmn:flowNodeRef>CheckPackageData</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_05ttn8h</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_0t8wm4l</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_032plv6</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_1fcnwns</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_17o59jk</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>CheckData</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_1gex47f</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_08eysr8</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_022fg08</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CheckData</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CheckPackageData</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_0yrok5o</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_0q1563q</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Packetverwaltung" name="Packetverwaltung">
         <bpmn:flowNodeRef>Activity_1wx3agq</bpmn:flowNodeRef>
@@ -58,11 +60,6 @@
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_1ib9xlp</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:exclusiveGateway id="CheckPackageData" default="Flow_1hdcu53">
-      <bpmn:incoming>Flow_1juk413</bpmn:incoming>
-      <bpmn:outgoing>Flow_1hdcu53</bpmn:outgoing>
-      <bpmn:outgoing>Flow_0ydauyr</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
     <bpmn:exclusiveGateway id="Gateway_05ttn8h">
       <bpmn:incoming>Flow_12kn09f</bpmn:incoming>
       <bpmn:outgoing>Flow_04xw1ev</bpmn:outgoing>
@@ -109,45 +106,11 @@
     <bpmn:serviceTask id="ComputePackageData" name="Paketdaten ermitteln" camunda:delegateExpression="${requestPackagesService}">
       <bpmn:incoming>Flow_0mn9h98</bpmn:incoming>
       <bpmn:incoming>Flow_1hdcu53</bpmn:incoming>
-      <bpmn:outgoing>Flow_14hw7xu</bpmn:outgoing>
+      <bpmn:outgoing>Flow_09iy5b4</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:userTask id="CheckData" name="Daten überprüfen">
-      <bpmn:extensionElements>
-        <camunda:formData>
-          <camunda:formField id="weight" label="Gewicht (kg)" type="long" defaultValue="0" />
-          <camunda:formField id="width" label="Länge" type="long" />
-          <camunda:formField id="height" label="Höhe" type="long" />
-          <camunda:formField id="depth" label="Tiefe" type="long" />
-          <camunda:formField id="deliveryCar" label="Fahrzeug" type="string" />
-          <camunda:formField id="confirmed" label="Bestätigen" type="boolean" defaultValue="false" />
-          <camunda:formField id="packageId" label="Paket Id" type="string">
-            <camunda:validation>
-              <camunda:constraint name="readonly" config="true" />
-            </camunda:validation>
-          </camunda:formField>
-        </camunda:formData>
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_14hw7xu</bpmn:incoming>
-      <bpmn:outgoing>Flow_1juk413</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:serviceTask id="CreatePackageLabel" name="Etikett erstellen">
-      <bpmn:extensionElements>
-        <camunda:connector>
-          <camunda:inputOutput>
-            <camunda:inputParameter name="headers">
-              <camunda:map>
-                <camunda:entry key="Content-Type">application/json</camunda:entry>
-              </camunda:map>
-            </camunda:inputParameter>
-            <camunda:inputParameter name="payload">{"note":"${note}"}</camunda:inputParameter>
-            <camunda:inputParameter name="url">http://fakeicms/packages/${confirmed}</camunda:inputParameter>
-            <camunda:inputParameter name="method">POST</camunda:inputParameter>
-            <camunda:outputParameter name="jsonInfo" />
-          </camunda:inputOutput>
-          <camunda:connectorId>http-connector</camunda:connectorId>
-        </camunda:connector>
-      </bpmn:extensionElements>
+    <bpmn:serviceTask id="CreatePackageLabel" name="Etikett erstellen" camunda:delegateExpression="${createLabelService}">
       <bpmn:incoming>Flow_0ydauyr</bpmn:incoming>
+      <bpmn:incoming>Flow_14k2f9d</bpmn:incoming>
       <bpmn:outgoing>Flow_1wrdqch</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:serviceTask id="WaitForPackageConfirmation" name="Abholung beantragen" camunda:type="external" camunda:topic="collectionRequest">
@@ -245,13 +208,54 @@
     <bpmn:sequenceFlow id="Flow_1teu2n3" sourceRef="WaitForPackageConfirmation" targetRef="SavePackageData" />
     <bpmn:sequenceFlow id="Flow_1wrdqch" sourceRef="CreatePackageLabel" targetRef="WaitForPackageConfirmation" />
     <bpmn:sequenceFlow id="Flow_0ydauyr" name="Bestätigt" sourceRef="CheckPackageData" targetRef="CreatePackageLabel">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${confirmed} == true</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${confirmed  == true}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_1hdcu53" name="Fehler bei Fahrer / Fahrzeug" sourceRef="CheckPackageData" targetRef="ComputePackageData" />
     <bpmn:sequenceFlow id="Flow_1juk413" sourceRef="CheckData" targetRef="CheckPackageData" />
-    <bpmn:sequenceFlow id="Flow_14hw7xu" sourceRef="ComputePackageData" targetRef="CheckData" />
     <bpmn:sequenceFlow id="Flow_0mn9h98" sourceRef="AcceptPackageData" targetRef="ComputePackageData" />
     <bpmn:sequenceFlow id="Flow_1ib9xlp" sourceRef="StartEvent_1" targetRef="AcceptPackageData" />
+    <bpmn:userTask id="CheckData" name="Daten überprüfen">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="weight" label="Gewicht (kg)" type="long" defaultValue="0" />
+          <camunda:formField id="width" label="Länge" type="long" />
+          <camunda:formField id="height" label="Höhe" type="long" />
+          <camunda:formField id="depth" label="Tiefe" type="long" />
+          <camunda:formField id="deliveryCar" label="Fahrzeug" type="string" />
+          <camunda:formField id="confirmed" label="Bestätigen" type="boolean" defaultValue="false" />
+          <camunda:formField id="packageId" label="Paket Id" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" config="true" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_00w4gax</bpmn:incoming>
+      <bpmn:outgoing>Flow_1juk413</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="CheckPackageData" default="Flow_1hdcu53">
+      <bpmn:incoming>Flow_1juk413</bpmn:incoming>
+      <bpmn:outgoing>Flow_1hdcu53</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0ydauyr</bpmn:outgoing>
+      <bpmn:outgoing>Flow_102seqj</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gateway_0yrok5o" default="Flow_14k2f9d">
+      <bpmn:incoming>Flow_09iy5b4</bpmn:incoming>
+      <bpmn:outgoing>Flow_00w4gax</bpmn:outgoing>
+      <bpmn:outgoing>Flow_14k2f9d</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_09iy5b4" sourceRef="ComputePackageData" targetRef="Gateway_0yrok5o" />
+    <bpmn:sequenceFlow id="Flow_00w4gax" name="price &#62;= 1000" sourceRef="Gateway_0yrok5o" targetRef="CheckData">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${price &gt;= 1000}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_14k2f9d" sourceRef="Gateway_0yrok5o" targetRef="CreatePackageLabel" />
+    <bpmn:endEvent id="Event_0q1563q">
+      <bpmn:incoming>Flow_102seqj</bpmn:incoming>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_02kz784" errorRef="Error_0hf3329" />
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_102seqj" name="IMPOSSIBLE TASK" sourceRef="CheckPackageData" targetRef="Event_0q1563q">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${confirmed == false &amp;&amp; reason == "IMPOSSIBLE_TASK"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
     <bpmn:textAnnotation id="TextAnnotation_14l7tlm">
       <bpmn:text>Sendungsverfolgung erstellt</bpmn:text>
     </bpmn:textAnnotation>
@@ -275,10 +279,11 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
     <bpmn:association id="Association_0bv90zd" sourceRef="Activity_1gex47f" targetRef="TextAnnotation_17kbf70" />
     <bpmn:association id="Association_1cukzyz" sourceRef="Activity_022fg08" targetRef="TextAnnotation_0enxoij" />
   </bpmn:process>
+  <bpmn:error id="Error_0hf3329" name="Error_2taqqnn" errorCode="1" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="packageProcess">
       <bpmndi:BPMNShape id="Participant_0yr31v2_di" bpmnElement="PaketVersenden" isHorizontal="true">
-        <dc:Bounds x="340" y="280" width="2238" height="530" />
+        <dc:Bounds x="340" y="280" width="2238" height="550" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_0gypzwc_di" bpmnElement="Absender" isHorizontal="true">
         <dc:Bounds x="370" y="280" width="2208" height="170" />
@@ -287,7 +292,7 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
         <dc:Bounds x="370" y="450" width="2208" height="125" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_1mxpb44_di" bpmnElement="Fahrer" isHorizontal="true">
-        <dc:Bounds x="370" y="575" width="2208" height="235" />
+        <dc:Bounds x="370" y="575" width="2208" height="255" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1ib9xlp_di" bpmnElement="Flow_1ib9xlp">
         <di:waypoint x="445" y="385" />
@@ -297,28 +302,24 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
         <di:waypoint x="550" y="425" />
         <di:waypoint x="550" y="475" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_14hw7xu_di" bpmnElement="Flow_14hw7xu">
-        <di:waypoint x="550" y="555" />
-        <di:waypoint x="550" y="595" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1juk413_di" bpmnElement="Flow_1juk413">
-        <di:waypoint x="600" y="635" />
-        <di:waypoint x="655" y="635" />
+        <di:waypoint x="600" y="740" />
+        <di:waypoint x="655" y="740" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1hdcu53_di" bpmnElement="Flow_1hdcu53">
-        <di:waypoint x="680" y="610" />
+        <di:waypoint x="680" y="715" />
         <di:waypoint x="680" y="515" />
         <di:waypoint x="600" y="515" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="687" y="541" width="86" height="27" />
+          <dc:Bounds x="687" y="585" width="86" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ydauyr_di" bpmnElement="Flow_0ydauyr">
-        <di:waypoint x="705" y="635" />
-        <di:waypoint x="850" y="635" />
-        <di:waypoint x="850" y="555" />
+        <di:waypoint x="705" y="740" />
+        <di:waypoint x="870" y="740" />
+        <di:waypoint x="870" y="555" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="756" y="617" width="44" height="14" />
+          <dc:Bounds x="766" y="722" width="44" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1wrdqch_di" bpmnElement="Flow_1wrdqch">
@@ -413,11 +414,32 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
         <di:waypoint x="1180" y="518" />
         <di:waypoint x="1180" y="595" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09iy5b4_di" bpmnElement="Flow_09iy5b4">
+        <di:waypoint x="550" y="555" />
+        <di:waypoint x="550" y="610" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00w4gax_di" bpmnElement="Flow_00w4gax">
+        <di:waypoint x="550" y="660" />
+        <di:waypoint x="550" y="700" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="476" y="673" width="68" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14k2f9d_di" bpmnElement="Flow_14k2f9d">
+        <di:waypoint x="575" y="635" />
+        <di:waypoint x="820" y="635" />
+        <di:waypoint x="820" y="555" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_102seqj_di" bpmnElement="Flow_102seqj">
+        <di:waypoint x="680" y="765" />
+        <di:waypoint x="680" y="780" />
+        <di:waypoint x="762" y="780" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="677" y="786" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="409" y="367" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_04z2r27_di" bpmnElement="CheckPackageData" isMarkerVisible="true">
-        <dc:Bounds x="655" y="610" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_05ttn8h_di" bpmnElement="Gateway_05ttn8h" isMarkerVisible="true">
         <dc:Bounds x="1655" y="625" width="50" height="50" />
@@ -442,9 +464,6 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_15yt4f2_di" bpmnElement="ComputePackageData">
         <dc:Bounds x="500" y="475" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0q3duiz_di" bpmnElement="CheckData">
-        <dc:Bounds x="500" y="595" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0dv895j_di" bpmnElement="CreatePackageLabel">
         <dc:Bounds x="800" y="475" width="100" height="80" />
@@ -487,6 +506,18 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TextAnnotation_17kbf70_di" bpmnElement="TextAnnotation_17kbf70">
         <dc:Bounds x="890" y="624" width="100" height="152" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0q3duiz_di" bpmnElement="CheckData">
+        <dc:Bounds x="500" y="700" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_04z2r27_di" bpmnElement="CheckPackageData" isMarkerVisible="true">
+        <dc:Bounds x="655" y="715" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0yrok5o_di" bpmnElement="Gateway_0yrok5o" isMarkerVisible="true">
+        <dc:Bounds x="525" y="610" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0q1563q_di" bpmnElement="Event_0q1563q">
+        <dc:Bounds x="762" y="762" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Association_155vig9_di" bpmnElement="Association_155vig9">
         <di:waypoint x="1896" y="475" />

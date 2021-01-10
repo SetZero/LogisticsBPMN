@@ -1,5 +1,6 @@
 package rocks.magical.camunda;
 
+import com.google.gson.Gson;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ public class RequestPackages implements JavaDelegate {
     @Autowired
     private PackageUtil packageUtil;
 
+    Gson gson = new Gson();
+
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
         String weight = delegateExecution.getVariable("weight").toString();
@@ -26,13 +29,12 @@ public class RequestPackages implements JavaDelegate {
         Driver driver = packageUtil.getBestDriverForPackageCenter(packageCenter);
         Vehicle vehicle = packageUtil.getVehicleForDriver(driver);
         Double price = (dimensions.get("w") * dimensions.get("h") * dimensions.get("d") * 0.01) + (Integer.parseInt(weight) * 0.1);
-        packageUtil.createRouteCandidate(startLocation, packageCenter, driver, vehicle);
-
-        System.out.println(packageCenter);
-        System.out.println(driver);
-        System.out.println(vehicle);
-        System.out.println("weight:" + weight + ", location: " + startLocation + ", dimensions: " + dimensions);
+        Integer routeId = packageUtil.createRouteCandidate(startLocation, packageCenter, driver, vehicle);
 
         delegateExecution.setVariable("price", price);
+        delegateExecution.setVariable("routeId", routeId);
+        delegateExecution.setVariable("packageCenter", gson.toJson(packageCenter));
+        delegateExecution.setVariable("driver", gson.toJson(driver));
+        delegateExecution.setVariable("vehicle", gson.toJson(vehicle));
     }
 }
