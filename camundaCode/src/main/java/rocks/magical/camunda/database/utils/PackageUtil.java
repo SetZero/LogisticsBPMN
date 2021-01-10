@@ -3,6 +3,7 @@ package rocks.magical.camunda.database.utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
+import rocks.magical.camunda.database.entities.Customer;
 import rocks.magical.camunda.database.entities.Driver;
 import rocks.magical.camunda.database.entities.PackageCenter;
 import rocks.magical.camunda.database.entities.Vehicle;
@@ -11,6 +12,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class PackageUtil {
     @Qualifier("jdbcPackage")
@@ -78,7 +80,8 @@ public class PackageUtil {
                 "  FROM driver d \n" +
                 "  INNER JOIN packagecenter dp ON d.homebase = dp.centerid  \n" +
                 "  WHERE driverid = ?)\n" +
-                ")";
+                ")\n" +
+                "LIMIT 1";
         Integer driverId = driver.getDriverId();
         List<Vehicle> vehicle = jdbcTemplate.query(query,
                 ps -> ps.setInt(1, driverId),
@@ -135,5 +138,65 @@ public class PackageUtil {
             return activeRouteId.get(0);
         else
             return null;
+    }
+
+    /**
+     * Get the customer which has the given API key
+     * @param apiKey key which is used for the customer search
+     * @return A customer object which belongs to the given key
+     */
+    public Customer getCustomerByKey(String apiKey) {
+        String query = "SELECT c.customerId, c.customerName, c.customerApiKey FROM customer c WHERE c.customerApiKey = ?";
+        List<Customer> driver = jdbcTemplate.query(query,
+                ps -> ps.setString(1, HashUtil.sha3(apiKey)),
+                (rs, i) -> new Customer(rs.getInt(1), rs.getString(2), rs.getString(3)));
+        if (driver.size() > 0)
+            return driver.get(0);
+        else
+            return null;
+    }
+
+    /**
+     * Creates a Shipment and with a package attached to it
+     * @param customerId the customer who wants the shipment to be fulfilled
+     * @param startLocation the location where the shipment starts
+     * @param targetLocation the destination of the shipment
+     * @param weight weight of the package
+     * @param dimensions dimensions of the package
+     * @return Shipment Id
+     */
+    public Integer createShipment(Integer customerId, String startLocation, String targetLocation, String weight, Map<String, Integer> dimensions) {
+        double volume = dimensions.get("w") * dimensions.get("h") * dimensions.get("d");
+
+        String query = "INSERT INTO package(weightKg, volumeM2) VALUES (?, ?) RETURNING packageId";
+        List<Integer> pkg = jdbcTemplate.query(query,
+                ps -> {
+                    ps.setInt(1, Integer.parseInt(weight));
+                    ps.setDouble(2, volume);
+                },
+                (rs, i) -> rs.getInt(1));
+
+        if (pkg.size() > 0) {
+            String startPointLocation = "POINT(" + startLocation + ")";
+            String targetPointLocation = "POINT(" + targetLocation + ")";
+            Integer packageId = pkg.get(0);
+            String shipmentQuery = "INSERT INTO shipmentInfo(customerId, packageId, startLocation, destination) VALUES (?, ?, ST_GeomFromText(?, 4326), ST_GeomFromText(?, 4326)) RETURNING shipmentId";
+            List<Integer> shipmentId = jdbcTemplate.query(shipmentQuery,
+                    ps -> {
+                        ps.setInt(1, customerId);
+                        ps.setInt(2, packageId);
+                        ps.setString(3, startPointLocation);
+                        ps.setString(4, targetPointLocation);
+                    },
+                    (rs, i) -> rs.getInt(1));
+            if (shipmentId.size() > 0)
+                return shipmentId.get(0);
+        }
+        return null;
+    }
+
+    public void setBarCodeBase64ForShipment(Integer shipmentId, String barcode) {
+        String query = "UPDATE shipmentInfo SET barcode = ? WHERE shipmentId = ?";
+        jdbcTemplate.update(query, barcode, shipmentId);
     }
 }

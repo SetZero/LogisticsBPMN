@@ -1,10 +1,8 @@
 package rocks.magical.camunda;
 
-import com.itextpdf.text.*;
+import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.BarcodePDF417;
-import com.itextpdf.text.pdf.PdfDocument;
-import com.itextpdf.text.pdf.PdfWriter;
 import connectjar.org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -17,21 +15,17 @@ import rocks.magical.camunda.helper.Base64Image;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
 
 @Component
 public class CreateLabel implements JavaDelegate {
+    Path tempDirWithPrefix;
     @Autowired
     private PackageUtil packageUtil;
-    Path tempDirWithPrefix;
 
     public CreateLabel() {
         try {
@@ -43,16 +37,17 @@ public class CreateLabel implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution execution) throws Exception {
-        String packageCenter = execution.getVariable("packageCenter").toString();
+        /*String packageCenter = execution.getVariable("packageCenter").toString();
         String driver = execution.getVariable("driver").toString();
         String vehicle = execution.getVariable("vehicle").toString();
+        String routeId = execution.getVariable("routeId").toString();*/
         String price = execution.getVariable("price").toString();
-        String routeId = execution.getVariable("routeId").toString();
+        String shipmentId = execution.getVariable("shipmentId").toString();
 
-        System.out.println("Called create Label: \n" + packageCenter + "\nprice: " + price);
+        String barcode = generateBarcode(shipmentId);
+        packageUtil.setBarCodeBase64ForShipment(Integer.valueOf(shipmentId), barcode);
 
-        String barcode = generateBarcode(routeId);
-        execution.setVariable("barcode", new Base64Image(barcode, "png")); // <- you can't be serious, camunda?!
+        // execution.setVariable("barcode", new Base64Image(barcode, "png")); // <- you can't be serious, camunda?!
         execution.setVariable("price", price);
     }
 
@@ -66,7 +61,7 @@ public class CreateLabel implements JavaDelegate {
         Image barcodeImage = barcode.getImage();
 
         java.awt.Image awtImage = barcode.createAwtImage(Color.BLACK, Color.WHITE);
-        BufferedImage bImage= new BufferedImage(awtImage.getWidth(null), awtImage.getHeight(null), BufferedImage.TYPE_INT_RGB);
+        BufferedImage bImage = new BufferedImage(awtImage.getWidth(null), awtImage.getHeight(null), BufferedImage.TYPE_INT_RGB);
         Graphics2D g = bImage.createGraphics();
         g.drawImage(awtImage, 0, 0, null);
         g.dispose();

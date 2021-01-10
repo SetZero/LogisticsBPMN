@@ -12,11 +12,11 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import rocks.magical.camunda.database.utils.HashUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -88,5 +88,10 @@ public class ProcessUnitTest {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  @Test
+  public void testSHA3() {
+    System.out.println(HashUtil.sha3("HACKME"));
   }
 }

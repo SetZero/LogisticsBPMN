@@ -1,12 +1,12 @@
 package rocks.magical.camunda.database.entities;
 
 public class Vehicle {
-    Integer vehicleId;
-    Integer vehicleVolumeM2;
-    String vehicleType;
-    String vehicleDesc;
-    Double maxWeightKg;
-    Integer packageCenter_centerId;
+    private final Integer vehicleId;
+    private final Integer vehicleVolumeM2;
+    private final String vehicleType;
+    private final String vehicleDesc;
+    private final Double maxWeightKg;
+    private final Integer packageCenter_centerId;
 
     public Vehicle(Integer vehicleId, Integer vehicleVolumeM2, String vehicleType, String vehicleDesc, Double maxWeightKg, Integer packageCenter_centerId) {
         this.vehicleId = vehicleId;

@@ -45,7 +45,7 @@ async function handleReserve() {
   }
 }
 
-async function completeTask(taskId, width, height, depth, weight, location) {
+async function completeTask(taskId, width, height, depth, weight, location, pTargetLocation, pAPIKey) {
   var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
 
@@ -53,11 +53,13 @@ async function completeTask(taskId, width, height, depth, weight, location) {
     "workerId": workerId, "variables": {
       "packageDimensions": {
         "value": {
-          'w': width, 'h': height, 'd':  depth
+          'w': width, 'h': height, 'd': depth
         }
       },
       "weight": { "value": weight },
       "location": { "value": location },
+      "targetLocation": { "value": pTargetLocation },
+      "key": { "value": pAPIKey }
     }
   });
 
@@ -69,18 +71,6 @@ async function completeTask(taskId, width, height, depth, weight, location) {
   };
 
   return fetch("http://localhost:8080/engine-rest/external-task/" + taskId + "/complete", requestOptions);
-}
-
-function handleCompleteTask(event, width, height, depth, weight, location) {
-  event.preventDefault();
-  handleReserve().then(() => {
-    fetchReserveTask().then(response => response.json())
-      .then(result => {
-        console.log(result);
-        completeTask(currentId, width, height, depth, weight, location).then(e => console.log(e)).catch(e => console.error(e))
-      })
-      .catch(error => console.log('error', error));
-  });
 }
 
 function locateMe(writeTo) {
@@ -96,11 +86,31 @@ function App() {
   const [weight, setWeight] = useState(0);
   const [location, setLocation] = useState("");
   const [targetLocation, setTargetLocation] = useState("11.070280570708459 49.41817197216562");
+  const [apiKey, setApiKey] = useState("HACKME");
 
-  fetchExternalTasks()
+  function handleCompleteTask(event) {
+    event.preventDefault();
+    let pWidth = width.valueOf();
+    let pHeight = height.valueOf();
+    let pDepth = depth.valueOf();
+    let pWeight = weight.valueOf();
+    let pLocation = location.valueOf();
+    let pTargetLocation = targetLocation.valueOf();
+    let pAPIKey = apiKey.valueOf();
+    handleReserve().then(() => {
+      fetchReserveTask().then(response => response.json())
+        .then(result => {
+          console.log(result);
+          completeTask(currentId, pWidth, pHeight, pDepth, pWeight, pLocation, pTargetLocation, pAPIKey).then(e => console.log(e)).catch(e => console.error(e))
+        })
+        .catch(error => console.log('error', error));
+    });
+  }
+
+  /*fetchExternalTasks()
     .then(e => e.json())
     .then(e => console.log(e))
-    .catch(e => console.error(e));
+    .catch(e => console.error(e));*/
 
   function handleChange(fn, event) {
     let val = parseInt(event.target.value);
@@ -115,15 +125,15 @@ function App() {
       <div>
         <div>
           <h2>Zusammenfassung</h2>
-          <div>Volumen: {width*height*depth} m³</div>
+          <div>Volumen: {width * height * depth} m³</div>
           <div>Gewicht: {weight} m³</div>
-          <div><strong>Geschätzte Kosten: </strong> {Math.max(width*height*depth / 1000, weight)} € </div>
+          <div><strong>Geschätzte Kosten: </strong> {Math.max(width * height * depth / 1000, weight)} € </div>
         </div>
-        <form onSubmit={event => handleCompleteTask(event, width.valueOf(), height.valueOf(), depth.valueOf(), weight.valueOf(), location.valueOf())}>
+        <form onSubmit={event => handleCompleteTask(event)}>
 
           <div>
             <label>
-                  Größe:
+              Größe:
               <input type="number" value={width} onChange={(event) => handleChange(setWidth, event)} placeholder="Weite" /> <span> x </span>
               <input type="number" value={height} onChange={(event) => handleChange(setHeight, event)} placeholder="Höhe" /> <span> x </span>
               <input type="number" value={depth} onChange={(event) => handleChange(setDepth, event)} placeholder="Tiefe" />
@@ -143,7 +153,7 @@ function App() {
             <label>
               Abholungsort:
               <input type="text" value={location} onChange={(event) => handleChange(setLocation, event)} placeholder="Ort" readOnly />
-              <button onClick={() => locateMe(setLocation)}>Lokalisieren</button>
+              <button type="button" onClick={() => locateMe(setLocation)}>Lokalisieren</button>
             </label>
           </div>
 
@@ -151,6 +161,13 @@ function App() {
             <label>
               Lieferort:
               <input type="text" value={targetLocation} onChange={(event) => handleChange(setTargetLocation, event)} placeholder="Ort" readOnly />
+            </label>
+          </div>
+
+          <div>
+            <label>
+              API Key:
+              <input type="password" value={apiKey} onChange={(event) => handleChange(setApiKey, event)} placeholder="Ort" />
             </label>
           </div>
           <input type="submit" value="Abschicken" />

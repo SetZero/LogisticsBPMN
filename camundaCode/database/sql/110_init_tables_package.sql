@@ -13,7 +13,50 @@ CREATE EXTENSION postgis;
 
 CREATE SEQUENCE seq_package_pk START 1;
 CREATE SEQUENCE seq_route_pk START 1;
+CREATE SEQUENCE seq_shipment_pk START 1;
+CREATE SEQUENCE seq_customer_pk START 1;
 CREATE TYPE vehicleEnum AS ENUM ('CAR', 'PLANE', 'SHIP');
+
+-- -----------------------------------------------------
+-- Table customer
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS customer
+(
+    customerId     INT  NOT NULL DEFAULT nextval('seq_customer_pk'),
+    customerName   TEXT NULL,
+    customerApiKey TEXT NULL,
+    PRIMARY KEY (customerId),
+    UNIQUE (customerApiKey)
+);
+
+-- -----------------------------------------------------
+-- Table package
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS package
+(
+    packageId INT     NOT NULL DEFAULT nextval('seq_package_pk'),
+    weightKg  DECIMAL NULL,
+    volumeM2  DECIMAL NULL,
+    PRIMARY KEY (packageId)
+);
+
+-- -----------------------------------------------------
+-- Table shipmentInfo
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS shipmentInfo
+(
+    shipmentId    INT      NOT NULL DEFAULT nextval('seq_shipment_pk') PRIMARY KEY,
+    customerId    INT      NOT NULL,
+    packageId     INT      NOT NULL,
+    startLocation GEOMETRY NOT NULL,
+    destination   GEOMETRY NOT NULL,
+    barcode       TEXT     NULL,
+    UNIQUE (customerId, packageId),
+    FOREIGN KEY (customerId)
+        REFERENCES customer (customerId),
+    FOREIGN KEY (packageId)
+        REFERENCES package (packageId)
+);
 
 -- -----------------------------------------------------
 -- Table packageCenter
@@ -59,18 +102,6 @@ CREATE TABLE IF NOT EXISTS driver
 
 
 -- -----------------------------------------------------
--- Table package
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS package
-(
-    packageId INT     NOT NULL DEFAULT nextval('seq_package_pk'),
-    weightKg  DECIMAL NULL,
-    volumeM2  DECIMAL NULL,
-    PRIMARY KEY (packageId)
-);
-
-
--- -----------------------------------------------------
 -- Table route
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS route
@@ -111,6 +142,9 @@ CREATE TABLE IF NOT EXISTS route_has_package
             ON DELETE NO ACTION
             ON UPDATE NO ACTION
 );
+
+INSERT INTO customer(customerName, customerApiKey)
+VALUES ('ACME', 'eaffaf1252995e4f513cb72005868a29295c75c675d004973ab399855b4bf6e8');
 
 INSERT INTO packageCenter(centerId, name, location)
 VALUES ('1', 'Berlin Hauptverwaltung', ST_GeomFromText('POINT (13.38282052168627 52.49815983382565)', 4326)),
