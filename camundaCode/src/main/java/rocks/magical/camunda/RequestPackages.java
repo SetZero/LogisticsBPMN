@@ -38,6 +38,9 @@ public class RequestPackages implements JavaDelegate {
         String targetLocation = delegateExecution.getVariable("targetLocation").toString();
         String apiKey = delegateExecution.getVariable("apiKey").toString();
         Map<String, Integer> dimensions = (Map<String, Integer>) delegateExecution.getVariable("packageDimensions");
+        // remove used variables
+        delegateExecution.removeVariable("apiKey");
+        delegateExecution.removeVariable("key");
 
         Customer customer = packageUtil.getCustomerByKey(apiKey);
         if(customer == null) {

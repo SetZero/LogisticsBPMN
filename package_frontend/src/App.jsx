@@ -220,10 +220,14 @@ function App() {
                     <td>{e.destination}</td>
                     <td>{e.startLocation}</td>
                     <td>{e.attachedProcessInstance}</td>
-                    <td><img src={"data:image/png;base64," + e.barcode} alt="barcode" /></td>
+                    <td>{e.barcode ? (<img src={"data:image/png;base64," + e.barcode} alt="barcode" />) : "---"}</td>
                     <td>
-                      <button>Cancel</button>
-                      <button>Confirm</button>
+                      {e.barcode ?
+                        (<div>
+                          <button>Cancel</button>
+                          <button>Confirm</button>
+                        </div>) : "Waiting for manual confirmation"
+                      }
                     </td>
                   </tr>)
                 })
