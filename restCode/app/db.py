@@ -2,6 +2,7 @@ import psycopg2 as psycopg2
 
 
 def start_database():
+    # TODO: Ping database until it is up...
     try:
         return psycopg2.connect(dbname='postgres', user='postgres', password='hackme', host='postgres',
                                 options=f'-c search_path={"schema_package"}')

@@ -138,7 +138,7 @@
       <bpmn:sequenceFlow id="Flow_1wrdqch" sourceRef="CreatePackageLabel" targetRef="WaitForPackageConfirmation" />
       <bpmn:sequenceFlow id="Flow_0mn9h98" sourceRef="AcceptPackageData" targetRef="ComputePackageData" />
       <bpmn:sequenceFlow id="Flow_1ib9xlp" sourceRef="StartEvent_1" targetRef="AcceptPackageData" />
-      <bpmn:sequenceFlow id="Flow_0gkafr2" sourceRef="Gateway_0yrok5o" targetRef="Event_0syw201">
+      <bpmn:sequenceFlow id="Flow_0gkafr2" name="Fehler" sourceRef="Gateway_0yrok5o" targetRef="Event_0syw201">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${error == "ILLEGAL_ACCESS" || error == "MALFORMED_REQUEST"}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_1gzfdgb" sourceRef="SavePackageData" targetRef="Event_0q78frx" />
@@ -459,6 +459,9 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
       <bpmndi:BPMNEdge id="Flow_0gkafr2_di" bpmnElement="Flow_0gkafr2">
         <di:waypoint x="645" y="660" />
         <di:waypoint x="565" y="660" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="589" y="642" width="33" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1ib9xlp_di" bpmnElement="Flow_1ib9xlp">
         <di:waypoint x="565" y="410" />

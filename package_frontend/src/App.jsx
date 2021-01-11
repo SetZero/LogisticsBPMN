@@ -23,6 +23,16 @@ async function fetchExternalTasks() {
   return fetch("http://localhost:8080/engine-rest/external-task/", requestOptions);
 }
 
+async function getGeoCoding(country, postalcode, street) {
+  let url = "https://nominatim.openstreetmap.org/search?country=" + country + "&postalcode=" + postalcode + "&street=" + street + "&format=json";
+  return fetch(url);
+}
+
+async function getReverseGeoCoding(lat, long) {
+  let url = "https://nominatim.openstreetmap.org/reverse?lat="+lat+"&lon="+long+"&format=json";
+  return fetch(url);
+}
+
 async function fetchReserveTask() {
   var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
@@ -92,8 +102,14 @@ async function getMyShipments(apiKey) {
 }
 
 function locateMe(writeTo) {
+
   navigator.geolocation.getCurrentPosition((loc) => {
-    writeTo(loc.coords.longitude + " " + loc.coords.latitude);
+    let long = loc.coords.longitude;
+    let lat = loc.coords.latitude;
+    writeTo(long + " " + lat);
+    getReverseGeoCoding(lat, long).then(e => e.json()).then(e => {
+      console.log(e);
+    });
   });
 }
 
