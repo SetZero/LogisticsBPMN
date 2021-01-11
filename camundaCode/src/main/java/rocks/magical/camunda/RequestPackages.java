@@ -45,8 +45,12 @@ public class RequestPackages implements JavaDelegate {
             return;
         }
 
-        Integer shipmentId = packageUtil.createShipment(customer.getCustomerId(), startLocation, targetLocation, weight, dimensions, delegateExecution.getProcessInstanceId());
-        Double price = (dimensions.get("w") * dimensions.get("h") * dimensions.get("d") * 0.01) + (Integer.parseInt(weight) * 0.1);
+        double price = Math.round(((dimensions.get("w") * dimensions.get("h") * dimensions.get("d") * 0.01) + Integer.parseInt(weight) * 0.1) * 100.0) / 100.0;
+        Integer shipmentId = packageUtil.createShipment(customer.getCustomerId(), startLocation, targetLocation, weight, dimensions, price, delegateExecution.getProcessInstanceId());
+        if(shipmentId == null) {
+            delegateExecution.setVariable("error", "MALFORMED_REQUEST");
+            return;
+        }
         /*PackageCenter packageCenter = packageUtil.getNearestPackageCenter(startLocation);
         Driver driver = packageUtil.getBestDriverForPackageCenter(packageCenter);
         Vehicle vehicle = packageUtil.getVehicleForDriver(driver);

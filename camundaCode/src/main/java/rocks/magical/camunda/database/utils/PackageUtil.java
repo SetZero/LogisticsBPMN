@@ -165,10 +165,11 @@ public class PackageUtil {
      * @param targetLocation the destination of the shipment
      * @param weight weight of the package
      * @param dimensions dimensions of the package
+     * @param price
      * @param processInstanceId
      * @return Shipment Id
      */
-    public Integer createShipment(Integer customerId, String startLocation, String targetLocation, String weight, Map<String, Integer> dimensions, String processInstanceId) {
+    public Integer createShipment(Integer customerId, String startLocation, String targetLocation, String weight, Map<String, Integer> dimensions, Double price, String processInstanceId) {
         double volume = dimensions.get("w") * dimensions.get("h") * dimensions.get("d");
 
         try {
@@ -184,7 +185,7 @@ public class PackageUtil {
                 String startPointLocation = "POINT(" + startLocation + ")";
                 String targetPointLocation = "POINT(" + targetLocation + ")";
                 Integer packageId = pkg.get(0);
-                String shipmentQuery = "INSERT INTO shipmentInfo(customerId, packageId, startLocation, destination, attachedProcessInstance) VALUES (?, ?, ST_GeomFromText(?, 4326), ST_GeomFromText(?, 4326), ?) RETURNING shipmentId";
+                String shipmentQuery = "INSERT INTO shipmentInfo(customerId, packageId, startLocation, destination, attachedProcessInstance, price) VALUES (?, ?, ST_GeomFromText(?, 4326), ST_GeomFromText(?, 4326), ?, ?) RETURNING shipmentId";
                 List<Integer> shipmentId = jdbcTemplate.query(shipmentQuery,
                         ps -> {
                             ps.setInt(1, customerId);
@@ -192,6 +193,7 @@ public class PackageUtil {
                             ps.setString(3, startPointLocation);
                             ps.setString(4, targetPointLocation);
                             ps.setString(5, processInstanceId);
+                            ps.setDouble(6, price);
                         },
                         (rs, i) -> rs.getInt(1));
                 if (shipmentId.size() > 0)

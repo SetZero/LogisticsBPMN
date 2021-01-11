@@ -75,6 +75,22 @@ async function completeTask(taskId, width, height, depth, weight, location, pTar
   return fetch("http://localhost:8080/engine-rest/external-task/" + taskId + "/complete", requestOptions);
 }
 
+async function getMyShipments(apiKey) {
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  var raw = JSON.stringify({
+    "apiKey": "HACKME"
+  });
+  var requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow'
+  };
+
+  return fetch("http://localhost:8082/shipments/all", requestOptions);
+}
+
 function locateMe(writeTo) {
   navigator.geolocation.getCurrentPosition((loc) => {
     writeTo(loc.coords.longitude + " " + loc.coords.latitude);
@@ -89,6 +105,8 @@ function App() {
   const [location, setLocation] = useState("");
   const [targetLocation, setTargetLocation] = useState("11.070280570708459 49.41817197216562");
   const [apiKey, setApiKey] = useState("HACKME");
+
+  const [myShipments, setMyShipments] = useState([]);
 
   function handleCompleteTask(event) {
     event.preventDefault();
@@ -174,8 +192,47 @@ function App() {
           </div>
           <input type="submit" value="Abschicken" />
         </form>
+        <div>
+          <button onClick={() => getMyShipments(apiKey.valueOf())
+            .then((e) => {
+              e.json().then((j) => setMyShipments(j))
+            })
+          }>Get Shipments!</button>
+
+          <table>
+            <thead>
+              <th>Customer Id</th>
+              <th>Shipment Id</th>
+              <th>Preis</th>
+              <th>Destination</th>
+              <th>Start Location</th>
+              <th>Attached Instance Id</th>
+              <th>Barcode</th>
+              <th>Action</th>
+            </thead>
+            <tbody>
+              {
+                myShipments.map((e, i) => {
+                  return (<tr key={i}>
+                    <td>{e.customerId}</td>
+                    <td>{e.shipmentId}</td>
+                    <td>{e.price ?? '---'} €</td>
+                    <td>{e.destination}</td>
+                    <td>{e.startLocation}</td>
+                    <td>{e.attachedProcessInstance}</td>
+                    <td><img src={"data:image/png;base64," + e.barcode} alt="barcode" /></td>
+                    <td>
+                      <button>Cancel</button>
+                      <button>Confirm</button>
+                    </td>
+                  </tr>)
+                })
+              }
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </div >
   );
 }
 

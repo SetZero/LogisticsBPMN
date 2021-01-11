@@ -45,13 +45,14 @@ CREATE TABLE IF NOT EXISTS package
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS shipmentInfo
 (
-    shipmentId              INT      NOT NULL DEFAULT nextval('seq_shipment_pk') PRIMARY KEY,
-    customerId              INT      NOT NULL,
-    packageId               INT      NOT NULL,
-    startLocation           GEOMETRY NOT NULL,
-    destination             GEOMETRY NOT NULL,
-    barcode                 TEXT     NULL,
-    attachedProcessInstance TEXT     NOT NULL,
+    shipmentId              INT        NOT NULL DEFAULT nextval('seq_shipment_pk') PRIMARY KEY,
+    customerId              INT        NOT NULL,
+    packageId               INT        NOT NULL,
+    startLocation           GEOMETRY   NOT NULL,
+    destination             GEOMETRY   NOT NULL,
+    barcode                 TEXT       NULL,
+    attachedProcessInstance TEXT       NOT NULL,
+    price                   NUMERIC(20, 2) NOT NULL,
     UNIQUE (customerId, packageId),
     FOREIGN KEY (customerId)
         REFERENCES customer (customerId),
