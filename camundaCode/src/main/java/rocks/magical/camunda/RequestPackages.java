@@ -24,6 +24,7 @@ public class RequestPackages implements JavaDelegate {
 
     Gson gson = new Gson();
 
+    @Deprecated
     private void expectNextPackage() {
         runtimeService.createSignalEvent("expectNextPackage")
                 .send();
@@ -31,7 +32,7 @@ public class RequestPackages implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
-        expectNextPackage();
+
         String weight = delegateExecution.getVariable("weight").toString();
         String startLocation = delegateExecution.getVariable("location").toString();
         String targetLocation = delegateExecution.getVariable("targetLocation").toString();
@@ -43,7 +44,8 @@ public class RequestPackages implements JavaDelegate {
             delegateExecution.setVariable("error", "ILLEGAL_ACCESS");
             return;
         }
-        Integer shipmentId = packageUtil.createShipment(customer.getCustomerId(), startLocation, targetLocation, weight, dimensions);
+
+        Integer shipmentId = packageUtil.createShipment(customer.getCustomerId(), startLocation, targetLocation, weight, dimensions, delegateExecution.getProcessInstanceId());
         Double price = (dimensions.get("w") * dimensions.get("h") * dimensions.get("d") * 0.01) + (Integer.parseInt(weight) * 0.1);
         /*PackageCenter packageCenter = packageUtil.getNearestPackageCenter(startLocation);
         Driver driver = packageUtil.getBestDriverForPackageCenter(packageCenter);

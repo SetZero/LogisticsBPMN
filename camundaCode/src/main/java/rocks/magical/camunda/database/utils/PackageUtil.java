@@ -2,12 +2,14 @@ package rocks.magical.camunda.database.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import rocks.magical.camunda.database.entities.Customer;
 import rocks.magical.camunda.database.entities.Driver;
 import rocks.magical.camunda.database.entities.PackageCenter;
 import rocks.magical.camunda.database.entities.Vehicle;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -163,34 +165,40 @@ public class PackageUtil {
      * @param targetLocation the destination of the shipment
      * @param weight weight of the package
      * @param dimensions dimensions of the package
+     * @param processInstanceId
      * @return Shipment Id
      */
-    public Integer createShipment(Integer customerId, String startLocation, String targetLocation, String weight, Map<String, Integer> dimensions) {
+    public Integer createShipment(Integer customerId, String startLocation, String targetLocation, String weight, Map<String, Integer> dimensions, String processInstanceId) {
         double volume = dimensions.get("w") * dimensions.get("h") * dimensions.get("d");
 
-        String query = "INSERT INTO package(weightKg, volumeM2) VALUES (?, ?) RETURNING packageId";
-        List<Integer> pkg = jdbcTemplate.query(query,
-                ps -> {
-                    ps.setInt(1, Integer.parseInt(weight));
-                    ps.setDouble(2, volume);
-                },
-                (rs, i) -> rs.getInt(1));
-
-        if (pkg.size() > 0) {
-            String startPointLocation = "POINT(" + startLocation + ")";
-            String targetPointLocation = "POINT(" + targetLocation + ")";
-            Integer packageId = pkg.get(0);
-            String shipmentQuery = "INSERT INTO shipmentInfo(customerId, packageId, startLocation, destination) VALUES (?, ?, ST_GeomFromText(?, 4326), ST_GeomFromText(?, 4326)) RETURNING shipmentId";
-            List<Integer> shipmentId = jdbcTemplate.query(shipmentQuery,
+        try {
+            String query = "INSERT INTO package(weightKg, volumeM2) VALUES (?, ?) RETURNING packageId";
+            List<Integer> pkg = jdbcTemplate.query(query,
                     ps -> {
-                        ps.setInt(1, customerId);
-                        ps.setInt(2, packageId);
-                        ps.setString(3, startPointLocation);
-                        ps.setString(4, targetPointLocation);
+                        ps.setInt(1, Integer.parseInt(weight));
+                        ps.setDouble(2, volume);
                     },
                     (rs, i) -> rs.getInt(1));
-            if (shipmentId.size() > 0)
-                return shipmentId.get(0);
+
+            if (pkg.size() > 0) {
+                String startPointLocation = "POINT(" + startLocation + ")";
+                String targetPointLocation = "POINT(" + targetLocation + ")";
+                Integer packageId = pkg.get(0);
+                String shipmentQuery = "INSERT INTO shipmentInfo(customerId, packageId, startLocation, destination, attachedProcessInstance) VALUES (?, ?, ST_GeomFromText(?, 4326), ST_GeomFromText(?, 4326), ?) RETURNING shipmentId";
+                List<Integer> shipmentId = jdbcTemplate.query(shipmentQuery,
+                        ps -> {
+                            ps.setInt(1, customerId);
+                            ps.setInt(2, packageId);
+                            ps.setString(3, startPointLocation);
+                            ps.setString(4, targetPointLocation);
+                            ps.setString(5, processInstanceId);
+                        },
+                        (rs, i) -> rs.getInt(1));
+                if (shipmentId.size() > 0)
+                    return shipmentId.get(0);
+            }
+        }catch (DataAccessException e) {
+            System.out.println("Unable to get data: " + e.getLocalizedMessage());
         }
         return null;
     }
