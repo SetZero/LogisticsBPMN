@@ -21,9 +21,11 @@
         <bpmn:flowNodeRef>Gateway_161pgll</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_0gvxeaz</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_0rl94h1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Event_1858bji</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_0fnghpw</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_1wx3agq</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_0va0tsg</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_048jblj</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1858bji</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Absender" name="Absender">
         <bpmn:flowNodeRef>Event_1970gqk</bpmn:flowNodeRef>
@@ -60,13 +62,20 @@
       <bpmn:outgoing>Flow_0mjm8xp</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:serviceTask id="Activity_139uts8" name="Abholung beantragen" camunda:type="external" camunda:topic="collectionRequest">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="location">${location}</camunda:outputParameter>
+          <camunda:outputParameter name="shipmentId">${shipmentId}</camunda:outputParameter>
+          <camunda:outputParameter name="apiKey">${key}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_1blf8hq</bpmn:incoming>
       <bpmn:outgoing>Flow_0ehytml</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:serviceTask id="Activity_1qqc74q" name="Speichere Sendungsdaten" camunda:delegateExpression="${generateShipmentData}">
       <bpmn:incoming>Flow_0ehytml</bpmn:incoming>
       <bpmn:incoming>Flow_1xxlqcz</bpmn:incoming>
-      <bpmn:outgoing>Flow_03b5wwk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1y9wk6t</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:serviceTask id="Activity_04bsbr1" name="Paketdaten ermitteln" camunda:delegateExpression="${requestPackagesService}">
       <bpmn:incoming>Flow_0mjm8xp</bpmn:incoming>
@@ -88,14 +97,6 @@
       <bpmn:incoming>Flow_1tfg3d9</bpmn:incoming>
       <bpmn:outgoing>Flow_1blf8hq</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:intermediateCatchEvent id="Event_1858bji">
-      <bpmn:documentation>0 0 6 ? * MON,TUE,WED,THU,FRI *</bpmn:documentation>
-      <bpmn:incoming>Flow_03b5wwk</bpmn:incoming>
-      <bpmn:outgoing>Flow_0e3wgw1</bpmn:outgoing>
-      <bpmn:timerEventDefinition id="TimerEventDefinition_0hdyx0u">
-        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">0/30 * * ? * * *</bpmn:timeCycle>
-      </bpmn:timerEventDefinition>
-    </bpmn:intermediateCatchEvent>
     <bpmn:sequenceFlow id="Flow_0e3wgw1" sourceRef="Event_1858bji" targetRef="Activity_1gex47f" />
     <bpmn:sequenceFlow id="Flow_0fiqext" name="Fehler" sourceRef="Gateway_161pgll" targetRef="Event_0gvxeaz">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${error == "ILLEGAL_ACCESS" || error == "MALFORMED_REQUEST"}</bpmn:conditionExpression>
@@ -113,7 +114,6 @@
     <bpmn:sequenceFlow id="Flow_0u6zy5a" name="price &#62;= 1000 oder price &#60; 0" sourceRef="Gateway_161pgll" targetRef="Activity_01j7ebs">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${price &gt;= 1000 || price &lt; 0}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_03b5wwk" sourceRef="Activity_1qqc74q" targetRef="Event_1858bji" />
     <bpmn:sequenceFlow id="Flow_1xxlqcz" sourceRef="Gateway_08eysr8" targetRef="Activity_1qqc74q">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${accepted == "false"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -237,6 +237,16 @@
             <camunda:value id="IMPOSSIBLE_TASK" name="Unmögliche Aufgabe" />
             <camunda:value id="NONE" name="Keine Angabe / Angenommen" />
           </camunda:formField>
+          <camunda:formField id="customerId" label="Kundennummer" type="long">
+            <camunda:properties>
+              <camunda:property id="readonly" />
+            </camunda:properties>
+          </camunda:formField>
+          <camunda:formField id="customerName" label="Kundenname" type="string">
+            <camunda:properties>
+              <camunda:property id="readonly" />
+            </camunda:properties>
+          </camunda:formField>
         </camunda:formData>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0u6zy5a</bpmn:incoming>
@@ -271,6 +281,28 @@
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="Flow_108j8cm" sourceRef="Activity_1jejufr" targetRef="Event_0enunsz" />
     </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_1y9wk6t" sourceRef="Activity_1qqc74q" targetRef="Gateway_0va0tsg" />
+    <bpmn:sequenceFlow id="Flow_16y1jhv" sourceRef="Gateway_0va0tsg" targetRef="Event_1858bji" />
+    <bpmn:exclusiveGateway id="Gateway_0va0tsg" default="Flow_16y1jhv">
+      <bpmn:incoming>Flow_1y9wk6t</bpmn:incoming>
+      <bpmn:outgoing>Flow_16y1jhv</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0dtf1z6</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="Event_048jblj">
+      <bpmn:incoming>Flow_0dtf1z6</bpmn:incoming>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_0i07s3p" errorRef="Error_0hf3329" />
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0dtf1z6" sourceRef="Gateway_0va0tsg" targetRef="Event_048jblj">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${error == "ILLEGAL_ACCESS"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:intermediateCatchEvent id="Event_1858bji">
+      <bpmn:documentation>0 0 6 ? * MON,TUE,WED,THU,FRI *</bpmn:documentation>
+      <bpmn:incoming>Flow_16y1jhv</bpmn:incoming>
+      <bpmn:outgoing>Flow_0e3wgw1</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0hdyx0u">
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">0/30 * * ? * * *</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
     <bpmn:textAnnotation id="TextAnnotation_1vevfny">
       <bpmn:text>- Ermittlung von Standort
 - Ermitteln von freiem Fahrzeug an Standort
@@ -414,10 +446,6 @@
         <di:waypoint x="1090" y="720" />
         <di:waypoint x="1090" y="470" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_03b5wwk_di" bpmnElement="Flow_03b5wwk">
-        <di:waypoint x="1140" y="430" />
-        <di:waypoint x="1192" y="430" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0u6zy5a_di" bpmnElement="Flow_0u6zy5a">
         <di:waypoint x="640" y="515" />
         <di:waypoint x="640" y="870" />
@@ -475,9 +503,22 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0e3wgw1_di" bpmnElement="Flow_0e3wgw1">
-        <di:waypoint x="1228" y="430" />
+        <di:waypoint x="1308" y="430" />
         <di:waypoint x="1340" y="430" />
         <di:waypoint x="1340" y="585" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1y9wk6t_di" bpmnElement="Flow_1y9wk6t">
+        <di:waypoint x="1140" y="430" />
+        <di:waypoint x="1180" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_16y1jhv_di" bpmnElement="Flow_16y1jhv">
+        <di:waypoint x="1230" y="430" />
+        <di:waypoint x="1272" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0dtf1z6_di" bpmnElement="Flow_0dtf1z6">
+        <di:waypoint x="1205" y="405" />
+        <di:waypoint x="1205" y="380" />
+        <di:waypoint x="1322" y="380" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_1970gqk_di" bpmnElement="Event_1970gqk">
         <dc:Bounds x="499" y="242" width="36" height="36" />
@@ -502,9 +543,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0rl94h1_di" bpmnElement="Activity_0rl94h1">
         <dc:Bounds x="890" y="360" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_067x0ti_di" bpmnElement="Event_1858bji">
-        <dc:Bounds x="1192" y="412" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1i9s79n_di" bpmnElement="Activity_0fnghpw">
         <dc:Bounds x="1520" y="425" width="100" height="80" />
@@ -562,6 +600,15 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TextAnnotation_0enxoij_di" bpmnElement="TextAnnotation_0enxoij">
         <dc:Bounds x="1790" y="681" width="100" height="30" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0va0tsg_di" bpmnElement="Gateway_0va0tsg" isMarkerVisible="true">
+        <dc:Bounds x="1180" y="405" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_048jblj_di" bpmnElement="Event_048jblj">
+        <dc:Bounds x="1322" y="362" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_067x0ti_di" bpmnElement="Event_1858bji">
+        <dc:Bounds x="1272" y="412" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Association_0ozj2fb_di" bpmnElement="Association_0ozj2fb">
         <di:waypoint x="663" y="360" />

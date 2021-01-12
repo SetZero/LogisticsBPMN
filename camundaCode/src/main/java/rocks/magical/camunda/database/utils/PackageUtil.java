@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import rocks.magical.camunda.database.entities.Customer;
-import rocks.magical.camunda.database.entities.Driver;
-import rocks.magical.camunda.database.entities.PackageCenter;
-import rocks.magical.camunda.database.entities.Vehicle;
+import rocks.magical.camunda.database.entities.*;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -203,6 +200,11 @@ public class PackageUtil {
             System.out.println("Unable to get data: " + e.getLocalizedMessage());
         }
         return null;
+    }
+
+    public void updateShipmentState(int shipmentId, ShipmentStates state) {
+        String query = "UPDATE shipmentInfo SET state = ?::shipmentstateenum WHERE shipmentId = ?";
+        jdbcTemplate.update(query, state.toString(), shipmentId);
     }
 
     public Integer getShipmentsIdInPackageCenter(PackageCenter center) {

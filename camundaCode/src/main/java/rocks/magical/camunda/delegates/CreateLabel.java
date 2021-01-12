@@ -9,6 +9,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import rocks.magical.camunda.database.entities.ShipmentStates;
 import rocks.magical.camunda.database.utils.PackageUtil;
 import rocks.magical.camunda.helper.Base64Image;
 
@@ -37,17 +38,13 @@ public class CreateLabel implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution execution) throws Exception {
-        /*String packageCenter = execution.getVariable("packageCenter").toString();
-        String driver = execution.getVariable("driver").toString();
-        String vehicle = execution.getVariable("vehicle").toString();
-        String routeId = execution.getVariable("routeId").toString();*/
         String price = execution.getVariable("price").toString();
         String shipmentId = execution.getVariable("shipmentId").toString();
 
         String barcode = generateBarcode(shipmentId);
         packageUtil.setBarCodeBase64ForShipment(Integer.valueOf(shipmentId), barcode);
+        packageUtil.updateShipmentState(Integer.parseInt(shipmentId), ShipmentStates.COLLECTION_REQUEST);
 
-        // execution.setVariable("barcode", new Base64Image(barcode, "png")); // <- you can't be serious, camunda?!
         execution.setVariable("price", price);
     }
 

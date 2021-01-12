@@ -18,7 +18,8 @@ class ShipmentDatabase:
     def getShipmentsMap(self, key):
         cur = self.conn.cursor()
         cur.execute("""SELECT c.customerId, si.shipmentid, si.barcode, 
-                            ST_AsText(si.destination), ST_AsText(si.startlocation), si.attachedprocessinstance, si.price
+                            ST_AsText(si.destination), ST_AsText(si.startlocation), si.attachedprocessinstance,
+                            si.price, si.state
                         FROM customer c
                         INNER JOIN shipmentinfo si ON si.customerid = c.customerid
                         WHERE c.customerApiKey ILIKE %s""",
@@ -32,6 +33,7 @@ class ShipmentDatabase:
                 'destination': record[3],
                 'startLocation': record[4],
                 'attachedProcessInstance': record[5],
-                'price': float(record[6])
+                'price': float(record[6]),
+                'state': record[7],
             })
         return el

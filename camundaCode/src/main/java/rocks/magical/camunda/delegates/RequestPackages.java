@@ -22,7 +22,6 @@ public class RequestPackages implements JavaDelegate {
     @Autowired
     private PackageUtil packageUtil;
 
-    Gson gson = new Gson();
 
     @Deprecated
     private void expectNextPackage() {
@@ -62,6 +61,8 @@ public class RequestPackages implements JavaDelegate {
         delegateExecution.setVariable("price", price);
         delegateExecution.setVariable("shipmentId", shipmentId);
         delegateExecution.setVariable("error", "NONE"); //f you camunda
+        delegateExecution.setVariable("customerId", customer.getCustomerId());
+        delegateExecution.setVariable("customerName", customer.getCustomerName());
         /*delegateExecution.setVariable("routeId", routeId);
         delegateExecution.setVariable("packageCenter", gson.toJson(packageCenter));
         delegateExecution.setVariable("driver", gson.toJson(driver));

@@ -16,6 +16,7 @@ CREATE SEQUENCE seq_route_pk START 1;
 CREATE SEQUENCE seq_shipment_pk START 1;
 CREATE SEQUENCE seq_customer_pk START 1;
 CREATE TYPE vehicleEnum AS ENUM ('CAR', 'PLANE', 'SHIP');
+CREATE TYPE shipmentStateEnum AS ENUM ('INFO_RECEIVED', 'COLLECTION_REQUEST', 'PICK_UP', 'IN_TRANSIT', 'HUB_SCAN', 'OUT_FOR_DELIVERY');
 
 -- -----------------------------------------------------
 -- Table customer
@@ -53,6 +54,7 @@ CREATE TABLE IF NOT EXISTS shipmentInfo
     barcode                 TEXT       NULL,
     attachedProcessInstance TEXT       NOT NULL,
     price                   NUMERIC(20, 2) NOT NULL,
+    state                   shipmentStateEnum NOT NULL DEFAULT 'INFO_RECEIVED',
     UNIQUE (customerId, packageId),
     FOREIGN KEY (customerId)
         REFERENCES customer (customerId),

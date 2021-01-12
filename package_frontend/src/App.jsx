@@ -87,10 +87,11 @@ async function getMyShipments(apiKey) {
 }
 
 
-async function completeConfirmShipment(taskId, shipmentId) {
+async function completeConfirmShipment(taskId, shipmentId, pAPIKey) {
   let raw = {
     "workerId": workerId, "variables": {
       "shipmentId": { "value": shipmentId },
+      "key": { "value": pAPIKey }
     }
   };
 
@@ -124,7 +125,9 @@ function App() {
   }
 
   function confirmShipment(shipmentId, processInstanceId) {
-    handleReserve("http://localhost:8080/engine-rest/external-task/fetchAndLock", "collectionRequest", processInstanceId).then(e => completeConfirmShipment(currentId, shipmentId));
+    let pAPIKey = apiKey.valueOf();
+
+    handleReserve("http://localhost:8080/engine-rest/external-task/fetchAndLock", "collectionRequest", processInstanceId).then(e => completeConfirmShipment(currentId, shipmentId, pAPIKey));
   }
 
 
@@ -210,6 +213,7 @@ function App() {
                 <th>Start Location</th>
                 <th>Attached Instance Id</th>
                 <th>Barcode</th>
+                <th>Zustand</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -224,6 +228,7 @@ function App() {
                     <td>{e.startLocation}</td>
                     <td>{e.attachedProcessInstance}</td>
                     <td>{e.barcode ? (<img src={"data:image/png;base64," + e.barcode} alt="barcode" />) : "---"}</td>
+                    <td>{e.state}</td>
                     <td>
                       {e.barcode ?
                         (<div>

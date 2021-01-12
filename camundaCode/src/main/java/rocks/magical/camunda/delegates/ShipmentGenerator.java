@@ -1,11 +1,10 @@
 package rocks.magical.camunda.delegates;
 
+import com.google.gson.Gson;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
-import rocks.magical.camunda.database.entities.Driver;
-import rocks.magical.camunda.database.entities.PackageCenter;
-import rocks.magical.camunda.database.entities.Vehicle;
+import rocks.magical.camunda.database.entities.*;
 import rocks.magical.camunda.database.utils.PackageUtil;
 
 public class ShipmentGenerator implements JavaDelegate {
@@ -13,18 +12,33 @@ public class ShipmentGenerator implements JavaDelegate {
     @Autowired
     private PackageUtil packageUtil;
 
+    Gson gson = new Gson();
+
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
         String startLocation = delegateExecution.getVariable("location").toString();
+        String shipmentId = delegateExecution.getVariable("shipmentId").toString();
+        String apiKey = delegateExecution.getVariable("apiKey").toString();
+        String customerId = delegateExecution.getVariable("customerId").toString();
+        Customer customer = packageUtil.getCustomerByKey(apiKey);
+        if(customer == null || !customer.getCustomerId().equals(Integer.valueOf(customerId))) {
+            //TODO: Error handling
+            delegateExecution.setVariable("error", "ILLEGAL_ACCESS");
+            return;
+        }
+
 
         PackageCenter packageCenter = packageUtil.getNearestPackageCenter(startLocation);
         Driver driver = packageUtil.getBestDriverForPackageCenter(packageCenter);
         Vehicle vehicle = packageUtil.getVehicleForDriver(driver);
         Integer routeId = packageUtil.createRouteCandidate(startLocation, packageCenter, driver, vehicle);
+        packageUtil.updateShipmentState(Integer.parseInt(shipmentId), ShipmentStates.COLLECTION_REQUEST);
+        //TODO: Mark shipment as shipped!
 
         delegateExecution.setVariable("routeId", routeId);
-        delegateExecution.setVariable("packageCenter", packageCenter);
-        delegateExecution.setVariable("driver", driver);
-        delegateExecution.setVariable("vehicle", vehicle);
+        delegateExecution.setVariable("packageCenter", gson.toJson(packageCenter));
+        delegateExecution.setVariable("driver", gson.toJson(driver));
+        delegateExecution.setVariable("vehicle", gson.toJson(vehicle));
+        delegateExecution.setVariable("error", "NONE");
     }
 }
