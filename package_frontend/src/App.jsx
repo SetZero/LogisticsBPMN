@@ -1,79 +1,45 @@
 import React, { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { locateMe, getGeoCoding, getReverseGeoCoding } from './utils/geoLocate'
 
 const workerId = "aWorker";
 let currentId = "";
 //http://localhost:8080/engine-rest/engine/default/process-definition/key/PaketProzess/start
 
 
-async function fetchExternalTasks() {
-  var myHeaders = new Headers();
+
+async function fetchReserveTask(url, topicName, processInstanceId) {
+  let myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
+  let topic = { "topicName": topicName, "lockDuration": 10000 };
+  if (processInstanceId) topic.processInstanceId = processInstanceId;
 
-  var raw = JSON.stringify({ "topicName": "createPackage" });
+  let raw = JSON.stringify({ "workerId": workerId, "maxTasks": 1, "topics": [topic] });
 
-  var requestOptions = {
+  let requestOptions = {
     method: 'POST',
     headers: myHeaders,
     body: raw,
     redirect: 'follow'
   };
 
-  return fetch("http://localhost:8080/engine-rest/external-task/", requestOptions);
+  return fetch(url, requestOptions);
 }
 
-async function getGeoCoding(country, postalcode, street) {
-  let url = "https://nominatim.openstreetmap.org/search?country=" + country + "&postalcode=" + postalcode + "&street=" + street + "&format=json";
-  return fetch(url);
-}
-
-async function getReverseGeoCoding(lat, long) {
-  let url = "https://nominatim.openstreetmap.org/reverse?lat="+lat+"&lon="+long+"&format=json";
-  return fetch(url);
-}
-
-async function fetchReserveTask() {
-  var myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-
-  var raw = JSON.stringify({ "workerId": workerId, "maxTasks": 1, "topics": [{ "topicName": "createPackage", "lockDuration": 10000 }] });
-
-  var requestOptions = {
-    method: 'POST',
-    headers: myHeaders,
-    body: raw,
-    redirect: 'follow'
-  };
-
-  return fetch("http://localhost:8080/engine-rest/external-task/fetchAndLock", requestOptions);
-}
-
-async function handleReserve() {
-  let result = await fetchReserveTask().then(response => response.json());
+async function handleReserve(url, topicName, processInstanceId) {
+  let result = await fetchReserveTask(url, topicName, processInstanceId).then(response => response.json());
   if (result.length > 0) {
     currentId = result[0].id;
     console.log(currentId);
   }
 }
 
-async function completeTask(taskId, width, height, depth, weight, location, pTargetLocation, pAPIKey) {
+async function completeTaskHelper(taskId, objectData) {
   var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
 
-  var raw = JSON.stringify({
-    "workerId": workerId, "variables": {
-      "packageDimensions": {
-        "value": {
-          'w': width, 'h': height, 'd': depth
-        }
-      },
-      "weight": { "value": weight },
-      "location": { "value": location },
-      "targetLocation": { "value": pTargetLocation },
-      "key": { "value": pAPIKey }
-    }
-  });
+  var raw = JSON.stringify(objectData);
 
   var requestOptions = {
     method: 'POST',
@@ -85,11 +51,30 @@ async function completeTask(taskId, width, height, depth, weight, location, pTar
   return fetch("http://localhost:8080/engine-rest/external-task/" + taskId + "/complete", requestOptions);
 }
 
+async function completeTask(taskId, width, height, depth, weight, location, pTargetLocation, pAPIKey) {
+
+  var raw = {
+    "workerId": workerId, "variables": {
+      "packageDimensions": {
+        "value": {
+          'w': width, 'h': height, 'd': depth
+        }
+      },
+      "weight": { "value": weight },
+      "location": { "value": location },
+      "targetLocation": { "value": pTargetLocation },
+      "key": { "value": pAPIKey }
+    }
+  };
+
+  return completeTaskHelper(taskId, raw);
+}
+
 async function getMyShipments(apiKey) {
   var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
   var raw = JSON.stringify({
-    "apiKey": "HACKME"
+    "apiKey": apiKey
   });
   var requestOptions = {
     method: 'POST',
@@ -101,16 +86,15 @@ async function getMyShipments(apiKey) {
   return fetch("http://localhost:8082/shipments/all", requestOptions);
 }
 
-function locateMe(writeTo) {
 
-  navigator.geolocation.getCurrentPosition((loc) => {
-    let long = loc.coords.longitude;
-    let lat = loc.coords.latitude;
-    writeTo(long + " " + lat);
-    getReverseGeoCoding(lat, long).then(e => e.json()).then(e => {
-      console.log(e);
-    });
-  });
+async function completeConfirmShipment(taskId, shipmentId) {
+  let raw = {
+    "workerId": workerId, "variables": {
+      "shipmentId": { "value": shipmentId },
+    }
+  };
+
+  return completeTaskHelper(taskId, raw);
 }
 
 function App() {
@@ -133,15 +117,16 @@ function App() {
     let pLocation = location.valueOf();
     let pTargetLocation = targetLocation.valueOf();
     let pAPIKey = apiKey.valueOf();
-    handleReserve().then(() => {
-      fetchReserveTask().then(response => response.json())
-        .then(result => {
-          console.log(result);
-          completeTask(currentId, pWidth, pHeight, pDepth, pWeight, pLocation, pTargetLocation, pAPIKey).then(e => console.log(e)).catch(e => console.error(e))
-        })
-        .catch(error => console.log('error', error));
-    });
+
+    handleReserve("http://localhost:8080/engine-rest/external-task/fetchAndLock", "createPackage").then(() => {
+      completeTask(currentId, pWidth, pHeight, pDepth, pWeight, pLocation, pTargetLocation, pAPIKey).then(e => console.log(e)).catch(e => console.error(e))
+    }).catch(error => console.log('error', error));;
   }
+
+  function confirmShipment(shipmentId, processInstanceId) {
+    handleReserve("http://localhost:8080/engine-rest/external-task/fetchAndLock", "collectionRequest", processInstanceId).then(e => completeConfirmShipment(currentId, shipmentId));
+  }
+
 
   /*fetchExternalTasks()
     .then(e => e.json())
@@ -217,14 +202,16 @@ function App() {
 
           <table>
             <thead>
-              <th>Customer Id</th>
-              <th>Shipment Id</th>
-              <th>Preis</th>
-              <th>Destination</th>
-              <th>Start Location</th>
-              <th>Attached Instance Id</th>
-              <th>Barcode</th>
-              <th>Action</th>
+              <tr>
+                <th>Customer Id</th>
+                <th>Shipment Id</th>
+                <th>Preis</th>
+                <th>Destination</th>
+                <th>Start Location</th>
+                <th>Attached Instance Id</th>
+                <th>Barcode</th>
+                <th>Action</th>
+              </tr>
             </thead>
             <tbody>
               {
@@ -241,7 +228,7 @@ function App() {
                       {e.barcode ?
                         (<div>
                           <button>Cancel</button>
-                          <button>Confirm</button>
+                          <button onClick={() => confirmShipment(e.shipmentId, e.attachedProcessInstance)}>Confirm</button>
                         </div>) : "Waiting for manual confirmation"
                       }
                     </td>

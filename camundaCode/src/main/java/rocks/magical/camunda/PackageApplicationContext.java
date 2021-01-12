@@ -1,10 +1,6 @@
 package rocks.magical.camunda;
 
-import org.camunda.bpm.application.impl.EmbeddedProcessApplication;
-import org.camunda.bpm.application.impl.EmbeddedProcessApplicationReferenceImpl;
 import org.camunda.bpm.engine.*;
-import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.camunda.bpm.engine.impl.cfg.ProcessEnginePlugin;
 import org.camunda.bpm.engine.spring.ProcessEngineFactoryBean;
 import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +17,12 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.camunda.connect.plugin.impl.ConnectProcessEnginePlugin;
 import rocks.magical.camunda.database.DBConfig;
+import rocks.magical.camunda.delegates.CreateLabel;
+import rocks.magical.camunda.delegates.RequestPackages;
+import rocks.magical.camunda.delegates.ShipmentGenerator;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 @Configuration
 @Import({ DBConfig.class })
@@ -150,5 +147,10 @@ public class PackageApplicationContext {
     @Bean("createLabelService")
     public CreateLabel createLabelService() {
         return new CreateLabel();
+    }
+
+    @Bean("generateShipmentData")
+    public ShipmentGenerator generateShipmentData() {
+        return new ShipmentGenerator();
     }
 }

@@ -1,4 +1,4 @@
-package rocks.magical.camunda;
+package rocks.magical.camunda.delegates;
 
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Image;

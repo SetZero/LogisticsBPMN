@@ -1,4 +1,4 @@
-package rocks.magical.camunda;
+package rocks.magical.camunda.delegates;
 
 import com.google.gson.Gson;
 import org.camunda.bpm.engine.RuntimeService;
