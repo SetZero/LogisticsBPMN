@@ -205,6 +205,10 @@ public class PackageUtil {
         return null;
     }
 
+    public Integer getShipmentsIdInPackageCenter(PackageCenter center) {
+        return -1;
+    }
+
     public void setBarCodeBase64ForShipment(Integer shipmentId, String barcode) {
         String query = "UPDATE shipmentInfo SET barcode = ? WHERE shipmentId = ?";
         jdbcTemplate.update(query, barcode, shipmentId);

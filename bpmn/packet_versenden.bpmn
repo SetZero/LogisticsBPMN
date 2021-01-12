@@ -10,9 +10,9 @@
       </bpmn:lane>
       <bpmn:lane id="Packetverwaltung" name="Packetverwaltung">
         <bpmn:flowNodeRef>Activity_0fnghpw</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Activity_1wx3agq</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_01be0nv</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_1858bji</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1wx3agq</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Fahrer" name="Fahrer">
         <bpmn:flowNodeRef>Activity_022fg08</bpmn:flowNodeRef>
@@ -86,10 +86,6 @@
     <bpmn:task id="Activity_0t8wm4l" name="Paket annehmen">
       <bpmn:incoming>Flow_0l1h5zy</bpmn:incoming>
       <bpmn:outgoing>Flow_142jxyj</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:task id="Activity_1wx3agq" name="Zielfahrzeug und Fahrer bestimmen">
-      <bpmn:incoming>Flow_1tqvwy9</bpmn:incoming>
-      <bpmn:outgoing>Flow_0l1h5zy</bpmn:outgoing>
     </bpmn:task>
     <bpmn:exclusiveGateway id="Gateway_05ttn8h">
       <bpmn:incoming>Flow_12kn09f</bpmn:incoming>
@@ -247,6 +243,17 @@
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
     <bpmn:sequenceFlow id="Flow_06fjnen" sourceRef="Event_1858bji" targetRef="Activity_1gex47f" />
+    <bpmn:serviceTask id="Activity_1wx3agq" name="Zielfahrzeug und Fahrer bestimmen" camunda:delegateExpression="${blabla}">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Input_166v42s">
+            <camunda:list />
+          </camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1tqvwy9</bpmn:incoming>
+      <bpmn:outgoing>Flow_0l1h5zy</bpmn:outgoing>
+    </bpmn:serviceTask>
     <bpmn:textAnnotation id="TextAnnotation_17kbf70">
       <bpmn:text>Was passiert wenn ein Paket nicht angenommen werden kann?
 
@@ -296,14 +303,14 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
       <bpmndi:BPMNShape id="Lane_0gypzwc_di" bpmnElement="Absender" isHorizontal="true">
         <dc:Bounds x="190" y="85" width="2748" height="405" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_03wid3u_di" bpmnElement="Flow_03wid3u">
-        <di:waypoint x="268" y="270" />
-        <di:waypoint x="420" y="270" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_06fjnen_di" bpmnElement="Flow_06fjnen">
         <di:waypoint x="1348" y="580" />
         <di:waypoint x="1540" y="580" />
         <di:waypoint x="1540" y="695" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03wid3u_di" bpmnElement="Flow_03wid3u">
+        <di:waypoint x="268" y="270" />
+        <di:waypoint x="420" y="270" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0fsrzi1_di" bpmnElement="Flow_0fsrzi1">
         <di:waypoint x="2685" y="750" />
@@ -400,57 +407,17 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
       <bpmndi:BPMNShape id="Activity_0t8wm4l_di" bpmnElement="Activity_0t8wm4l">
         <dc:Bounds x="2230" y="710" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1wx3agq_di" bpmnElement="Activity_1wx3agq">
-        <dc:Bounds x="2170" y="575" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_05ttn8h_di" bpmnElement="Gateway_05ttn8h" isMarkerVisible="true">
         <dc:Bounds x="2015" y="725" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_17kbf70_di" bpmnElement="TextAnnotation_17kbf70">
-        <dc:Bounds x="1370" y="700" width="100" height="152" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_1pvdekr_di" bpmnElement="TextAnnotation_1pvdekr">
-        <dc:Bounds x="2350" y="770" width="100" height="40" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0enxoij_di" bpmnElement="TextAnnotation_0enxoij">
-        <dc:Bounds x="1990" y="791" width="100" height="30" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0yqgrcg_di" bpmnElement="TextAnnotation_0yqgrcg">
-        <dc:Bounds x="2270" y="490" width="100" height="54" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_1ad4vu5_di" bpmnElement="TextAnnotation_1ad4vu5">
-        <dc:Bounds x="1697" y="320" width="244" height="180" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0qr4gvt_di" bpmnElement="Event_0eebe04">
         <dc:Bounds x="232" y="252" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Association_0bv90zd_di" bpmnElement="Association_0bv90zd">
-        <di:waypoint x="1490" y="727" />
-        <di:waypoint x="1470" y="723" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_05xkufw_di" bpmnElement="Association_05xkufw">
-        <di:waypoint x="2330" y="765" />
-        <di:waypoint x="2350" y="770" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_1cukzyz_di" bpmnElement="Association_1cukzyz">
-        <di:waypoint x="1950" y="770" />
-        <di:waypoint x="2003" y="791" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_155vig9_di" bpmnElement="Association_155vig9">
-        <di:waypoint x="2256" y="575" />
-        <di:waypoint x="2285" y="544" />
-      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_1o1uf2y_di" bpmnElement="Activity_1wx3agq">
+        <dc:Bounds x="2170" y="575" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_07t6dzs_di" bpmnElement="Activity_01be0nv" isExpanded="true">
         <dc:Bounds x="420" y="220" width="910" height="670" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_14l7tlm_di" bpmnElement="TextAnnotation_14l7tlm">
-        <dc:Bounds x="810" y="485" width="100" height="40" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_1p171yj_di" bpmnElement="TextAnnotation_1p171yj">
-        <dc:Bounds x="1020" y="285" width="100" height="68" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_1ffrwfs_di" bpmnElement="TextAnnotation_1ffrwfs">
-        <dc:Bounds x="750" y="340" width="100" height="124" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1gzfdgb_di" bpmnElement="Flow_1gzfdgb">
         <di:waypoint x="1170" y="570" />
@@ -524,42 +491,55 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
           <dc:Bounds x="798" y="811" width="67" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Event_0q1563q_di" bpmnElement="Event_0q1563q">
-        <dc:Bounds x="882" y="787" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0yrok5o_di" bpmnElement="Gateway_0yrok5o" isMarkerVisible="true">
-        <dc:Bounds x="645" y="635" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_04z2r27_di" bpmnElement="CheckPackageData" isMarkerVisible="true">
-        <dc:Bounds x="775" y="740" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0q3duiz_di" bpmnElement="CheckData">
-        <dc:Bounds x="620" y="725" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0yh5otb_di" bpmnElement="WaitForPackageConfirmation">
-        <dc:Bounds x="920" y="370" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_09hb7b4_di" bpmnElement="AcceptPackageData">
-        <dc:Bounds x="620" y="370" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1e8qj0e_di" bpmnElement="StartEvent_1">
-        <dc:Bounds x="529" y="392" width="36" height="36" />
+      <bpmndi:BPMNShape id="Event_0q78frx_di" bpmnElement="Event_0q78frx">
+        <dc:Bounds x="1222" y="552" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0syw201_di" bpmnElement="Event_0syw201">
         <dc:Bounds x="529" y="642" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0dv895j_di" bpmnElement="CreatePackageLabel">
-        <dc:Bounds x="920" y="530" width="100" height="80" />
+      <bpmndi:BPMNShape id="Event_1e8qj0e_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="529" y="392" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1cjtg3a_di" bpmnElement="SavePackageData">
-        <dc:Bounds x="1070" y="530" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0q78frx_di" bpmnElement="Event_0q78frx">
-        <dc:Bounds x="1222" y="552" width="36" height="36" />
+      <bpmndi:BPMNShape id="Activity_09hb7b4_di" bpmnElement="AcceptPackageData">
+        <dc:Bounds x="620" y="370" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_15yt4f2_di" bpmnElement="ComputePackageData">
         <dc:Bounds x="620" y="530" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0dv895j_di" bpmnElement="CreatePackageLabel">
+        <dc:Bounds x="920" y="530" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0yh5otb_di" bpmnElement="WaitForPackageConfirmation">
+        <dc:Bounds x="920" y="370" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1cjtg3a_di" bpmnElement="SavePackageData">
+        <dc:Bounds x="1070" y="530" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0q3duiz_di" bpmnElement="CheckData">
+        <dc:Bounds x="620" y="725" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_04z2r27_di" bpmnElement="CheckPackageData" isMarkerVisible="true">
+        <dc:Bounds x="775" y="740" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0yrok5o_di" bpmnElement="Gateway_0yrok5o" isMarkerVisible="true">
+        <dc:Bounds x="645" y="635" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0q1563q_di" bpmnElement="Event_0q1563q">
+        <dc:Bounds x="882" y="787" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1ffrwfs_di" bpmnElement="TextAnnotation_1ffrwfs">
+        <dc:Bounds x="750" y="340" width="100" height="124" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1p171yj_di" bpmnElement="TextAnnotation_1p171yj">
+        <dc:Bounds x="1020" y="285" width="100" height="68" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_14l7tlm_di" bpmnElement="TextAnnotation_14l7tlm">
+        <dc:Bounds x="810" y="485" width="100" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_0n5f4v1_di" bpmnElement="Association_0n5f4v1">
+        <di:waypoint x="693" y="530" />
+        <di:waypoint x="750" y="431" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Association_1j4gmgq_di" bpmnElement="Association_1j4gmgq">
         <di:waypoint x="1006" y="370" />
         <di:waypoint x="1022" y="353" />
@@ -568,13 +548,40 @@ Soll jeder Fehlerfall abgedeckt sein?</bpmn:text>
         <di:waypoint x="920" y="539" />
         <di:waypoint x="900" y="525" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_0n5f4v1_di" bpmnElement="Association_0n5f4v1">
-        <di:waypoint x="693" y="530" />
-        <di:waypoint x="750" y="431" />
-      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_17kbf70_di" bpmnElement="TextAnnotation_17kbf70">
+        <dc:Bounds x="1370" y="700" width="100" height="152" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1pvdekr_di" bpmnElement="TextAnnotation_1pvdekr">
+        <dc:Bounds x="2350" y="770" width="100" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0enxoij_di" bpmnElement="TextAnnotation_0enxoij">
+        <dc:Bounds x="1990" y="791" width="100" height="30" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0yqgrcg_di" bpmnElement="TextAnnotation_0yqgrcg">
+        <dc:Bounds x="2270" y="490" width="100" height="54" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1ad4vu5_di" bpmnElement="TextAnnotation_1ad4vu5">
+        <dc:Bounds x="1697" y="320" width="244" height="180" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0ebmn1z_di" bpmnElement="Event_1858bji">
         <dc:Bounds x="1312" y="562" width="36" height="36" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_0bv90zd_di" bpmnElement="Association_0bv90zd">
+        <di:waypoint x="1490" y="727" />
+        <di:waypoint x="1470" y="723" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_05xkufw_di" bpmnElement="Association_05xkufw">
+        <di:waypoint x="2330" y="765" />
+        <di:waypoint x="2350" y="770" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1cukzyz_di" bpmnElement="Association_1cukzyz">
+        <di:waypoint x="1950" y="770" />
+        <di:waypoint x="2003" y="791" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_155vig9_di" bpmnElement="Association_155vig9">
+        <di:waypoint x="2256" y="575" />
+        <di:waypoint x="2285" y="544" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
