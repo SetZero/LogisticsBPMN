@@ -171,4 +171,9 @@ public class PackageApplicationContext {
     public DriverAndVehicle generateShipmentAndDriver(){
         return new DriverAndVehicle();
     }
+
+    @Bean("finishShipment")
+    public FinishShipment finishShipment() {
+        return new FinishShipment();
+    }
 }

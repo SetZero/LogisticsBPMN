@@ -40,7 +40,9 @@ public class ShipmentGenerator implements JavaDelegate {
         //TODO: Mark shipment as shipped!
 
         delegateExecution.setVariable("routeId", routeId);
-        delegateExecution.setVariable("packageCenter", gson.toJson(packageCenter));
+        delegateExecution.setVariable("startPackageCenter", gson.toJson(packageCenter));
+        delegateExecution.setVariable("startPackageCenterId", packageCenter.getCenterId());
+        delegateExecution.setVariable("startPackageCenterName", packageCenter.getName());
         delegateExecution.setVariable("driver", gson.toJson(driver));
         delegateExecution.setVariable("vehicle", gson.toJson(vehicle));
         delegateExecution.setVariable("error", "NONE");

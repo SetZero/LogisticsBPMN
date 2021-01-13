@@ -16,7 +16,7 @@ CREATE SEQUENCE seq_route_pk START 1;
 CREATE SEQUENCE seq_shipment_pk START 1;
 CREATE SEQUENCE seq_customer_pk START 1;
 CREATE TYPE vehicleEnum AS ENUM ('CAR', 'PLANE', 'SHIP');
-CREATE TYPE shipmentStateEnum AS ENUM ('INFO_RECEIVED', 'COLLECTION_REQUEST', 'PICK_UP', 'IN_TRANSIT', 'HUB_SCAN', 'OUT_FOR_DELIVERY');
+CREATE TYPE shipmentStateEnum AS ENUM ('INFO_RECEIVED', 'COLLECTION_REQUEST', 'PICK_UP', 'IN_TRANSIT', 'HUB_SCAN', 'OUT_FOR_DELIVERY', 'DELIVERED');
 
 -- -----------------------------------------------------
 -- Table customer
