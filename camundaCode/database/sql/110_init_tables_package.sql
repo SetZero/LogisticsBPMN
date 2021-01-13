@@ -31,6 +31,19 @@ CREATE TABLE IF NOT EXISTS customer
 );
 
 -- -----------------------------------------------------
+-- Table destination
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS destination
+(
+    destinationId     INT  NOT NULL PRIMARY KEY ,
+    customerId   INT NOT NULL,
+    destination  GEOMETRY   NOT NULL,
+    UNIQUE (destinationId, customerId),
+    FOREIGN KEY (customerId)
+        REFERENCES customer (customerId)
+);
+
+-- -----------------------------------------------------
 -- Table package
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS package
@@ -149,7 +162,8 @@ CREATE TABLE IF NOT EXISTS route_has_package
 );
 
 INSERT INTO customer(customerName, customerApiKey)
-VALUES ('ACME', 'eaffaf1252995e4f513cb72005868a29295c75c675d004973ab399855b4bf6e8');
+VALUES ('ACME', 'eaffaf1252995e4f513cb72005868a29295c75c675d004973ab399855b4bf6e8'),
+       ('ALDS', 'f884a5733baj43471234132078das7634504567435146565cabc578324efff32');
 
 INSERT INTO packageCenter(centerId, name, location)
 VALUES ('1', 'Berlin Hauptverwaltung', ST_GeomFromText('POINT (13.38282052168627 52.49815983382565)', 4326)),
@@ -158,6 +172,7 @@ VALUES ('1', 'Berlin Hauptverwaltung', ST_GeomFromText('POINT (13.38282052168627
        ('4', 'München Verteilerzentrum', ST_GeomFromText('POINT (11.594443317082792 48.15346833909564)', 4326)),
        ('5', 'Stuttgart Verteilerzentrum', ST_GeomFromText('POINT (9.153685947100337 48.7979992045862)', 4326)),
        ('6', 'Speyer Verteilerzentrum', ST_GeomFromText('POINT (8.406333880980359 49.309277440232826)', 4326));
+
 
 INSERT INTO driver (driverId, firstname, lastname, camundaId, homeBase)
 VALUES ('1', 'Heinrich ', 'Hertz', '-1', '1'),
@@ -175,3 +190,7 @@ VALUES ('1', '100', 'CAR', 'Koenigsegg Agera RS', '100', '1'),
        ('3', '300', 'CAR', 'Bugatti Chiron', '150', '2'),
        ('4', '500', 'SHIP', 'Spirit of Australia', '400', '3'),
        ('5', '400', 'PLANE', 'Lockheed SR-71 Blackbird', '100', '4');
+
+INSERT INTO destination (destinationId, customerId, destination)
+VALUES  ('1', '1',  ST_GeomFromText('POINT (12.578127347631176 43.26379475386531)', 4326)),
+        ('2', '2',  ST_GeomFromText('POINT (7.357824567453313 48.58217894367289)', 4326))

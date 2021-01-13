@@ -166,4 +166,9 @@ public class PackageApplicationContext {
     public ShipmentGenerator generateShipmentData() {
         return new ShipmentGenerator();
     }
+
+    @Bean("findDriverAndVehicle")
+    public DriverAndVehicle generateShipmentAndDriver(){
+        return new DriverAndVehicle();
+    }
 }

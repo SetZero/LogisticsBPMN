@@ -6,6 +6,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import rocks.magical.camunda.database.entities.*;
 
+import javax.print.attribute.standard.Destination;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -53,6 +54,30 @@ public class PackageUtil {
                 "ORDER BY ST_Distance(location, ST_GeomFromText(?, 4326))\n" +
                 "LIMIT 1";
         String pointLocation = p.getLocation();
+        List<Driver> driver = jdbcTemplate.query(query,
+                ps -> ps.setString(1, pointLocation),
+                (rs, i) -> new Driver(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4)));
+        if (driver.size() > 0)
+            return driver.get(0);
+        else
+            return null;
+    }
+
+    /**
+     * Finds the best driver for a route from package center p
+     *
+     * @param pointLocation the packagecenter to start the route from
+     * @return the most fitting driver for this package center
+     */
+    public Driver getBestDriverForPackageCenter(String pointLocation) {
+        String query = "SELECT d.driverid, d.firstname, d.lastname, d.camundaid, d.homebase, pc.name\n" +
+                "FROM packageCenter pc\n" +
+                "INNER JOIN driver d ON pc.centerid = d.homebase\n" +
+                "LEFT JOIN route r ON r.driver_driverid = d.driverid\n" +
+                "WHERE ST_DWithin(location, r.destination, 1) OR r.destination IS NULL\n" +
+                "ORDER BY ST_Distance(location, ST_GeomFromText(?, 4326))\n" +
+                "LIMIT 1";
+
         List<Driver> driver = jdbcTemplate.query(query,
                 ps -> ps.setString(1, pointLocation),
                 (rs, i) -> new Driver(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4)));
