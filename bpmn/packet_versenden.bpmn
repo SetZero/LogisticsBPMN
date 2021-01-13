@@ -117,7 +117,7 @@
     <bpmn:sequenceFlow id="Flow_1xxlqcz" sourceRef="Gateway_08eysr8" targetRef="Activity_1qqc74q">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${accepted == "false"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:serviceTask id="Activity_0fnghpw" name="Zielpaketzentrumsfahrzeug und Fahrer bestimmen" camunda:class="rocks.magical.process.DestinationTransportGenerator">
+    <bpmn:serviceTask id="Activity_0fnghpw" name="Zielpaketzentrumsfahrzeug und Fahrer bestimmen" camunda:delegateExpression="${findIntermediateDriver}">
       <bpmn:extensionElements>
         <camunda:inputOutput>
           <camunda:outputParameter name="PackageMap">
@@ -178,6 +178,21 @@
       <bpmn:outgoing>Flow_1xxlqcz</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:userTask id="Activity_1gex47f" name="Paketabholung beim Kunden">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="locationName" label="Abholungsort" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="accepted" label="Bestätigen" type="boolean" />
+          <camunda:formField id="shipmentId" label="Sendungsnummer" type="long">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_0rep5j0</bpmn:incoming>
       <bpmn:outgoing>Flow_14h6aga</bpmn:outgoing>
     </bpmn:userTask>

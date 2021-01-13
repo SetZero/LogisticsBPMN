@@ -157,6 +157,11 @@ public class PackageApplicationContext {
         return new OrderPackages();
     }
 
+    @Bean("findIntermediateDriver")
+    public IntermediateDriverGenerator findIntermediateDriver() {
+        return new IntermediateDriverGenerator();
+    }
+
     @Bean("generateShipmentData")
     public ShipmentGenerator generateShipmentData() {
         return new ShipmentGenerator();

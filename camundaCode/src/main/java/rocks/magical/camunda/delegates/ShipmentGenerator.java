@@ -21,6 +21,10 @@ public class ShipmentGenerator implements JavaDelegate {
         String apiKey = delegateExecution.getVariable("apiKey").toString();
         String customerId = delegateExecution.getVariable("customerId").toString();
         Customer customer = packageUtil.getCustomerByKey(apiKey);
+        // remove used variables
+        delegateExecution.removeVariable("apiKey");
+        delegateExecution.removeVariable("key");
+
         if(customer == null || !customer.getCustomerId().equals(Integer.valueOf(customerId))) {
             delegateExecution.setVariable("error", "ILLEGAL_ACCESS");
             return;

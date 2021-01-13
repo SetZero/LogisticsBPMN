@@ -13,6 +13,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import rocks.magical.camunda.database.utils.HashUtil;
+import rocks.magical.camunda.helper.LocationService;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -93,5 +94,10 @@ public class ProcessUnitTest {
   @Test
   public void testSHA3() {
     System.out.println(HashUtil.sha3("HACKME"));
+  }
+
+  @Test
+  public void testLocationService() {
+    System.out.println(LocationService.getLocationName(7.7784, 49.151));
   }
 }

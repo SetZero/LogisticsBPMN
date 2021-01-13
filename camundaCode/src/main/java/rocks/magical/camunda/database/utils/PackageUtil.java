@@ -219,4 +219,18 @@ public class PackageUtil {
         String query = "INSERT INTO route_has_package(package_packageId, routeId, pickupLocation) VALUES ((SELECT packageId FROM shipmentInfo WHERE shipmentId = ?), ?, ST_GeomFromText(?, 4326))";
         jdbcTemplate.update(query, Integer.parseInt(shipmentId), routeId, startPointLocation);
     }
+
+    public Coordinates getPickupCoordinatesForShipment(Integer shipmentId) {
+        String query = "SELECT ST_X(pickuplocation) x, ST_Y(pickuplocation) y FROM\n" +
+                "route_has_package rp\n" +
+                "INNER JOIN shipmentinfo si ON si.packageid = rp.package_packageid\n" +
+                "WHERE si.shipmentid = ?";
+        List<Coordinates> coordinates = jdbcTemplate.query(query,
+                ps -> ps.setInt(1, shipmentId),
+                (rs, i) -> new Coordinates(rs.getDouble(1), rs.getDouble(2)));
+        if (coordinates.size() > 0)
+            return coordinates.get(0);
+        else
+            return null;
+    }
 }
