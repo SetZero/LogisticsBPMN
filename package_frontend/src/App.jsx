@@ -137,6 +137,11 @@ function App() {
     .catch(e => console.error(e));*/
 
   function handleChange(fn, event) {
+    let val = (event.target.value);
+    fn(val ? val : 0);
+  }
+
+  function handleChangeInt(fn, event) {
     let val = parseInt(event.target.value);
     fn(val ? val : 0);
   }
@@ -158,9 +163,9 @@ function App() {
           <div>
             <label>
               Größe:
-              <input type="number" value={width} onChange={(event) => handleChange(setWidth, event)} placeholder="Weite" /> <span> x </span>
-              <input type="number" value={height} onChange={(event) => handleChange(setHeight, event)} placeholder="Höhe" /> <span> x </span>
-              <input type="number" value={depth} onChange={(event) => handleChange(setDepth, event)} placeholder="Tiefe" />
+              <input type="number" value={width} onChange={(event) => handleChangeInt(setWidth, event)} placeholder="Weite" /> <span> x </span>
+              <input type="number" value={height} onChange={(event) => handleChangeInt(setHeight, event)} placeholder="Höhe" /> <span> x </span>
+              <input type="number" value={depth} onChange={(event) => handleChangeInt(setDepth, event)} placeholder="Tiefe" />
               <span> Meter</span>
             </label>
           </div>
@@ -168,7 +173,7 @@ function App() {
           <div>
             <label>
               Gewicht:
-              <input type="text" value={weight} onChange={(event) => handleChange(setWeight, event)} placeholder="Gewicht" />
+              <input type="text" value={weight} onChange={(event) => handleChangeInt(setWeight, event)} placeholder="Gewicht" />
               <span> kg</span>
             </label>
           </div>
@@ -231,10 +236,11 @@ function App() {
                     <td>{e.state}</td>
                     <td>
                       {e.barcode ?
+                        e.state === 'INFO_RECEIVED' ?
                         (<div>
                           <button>Cancel</button>
                           <button onClick={() => confirmShipment(e.shipmentId, e.attachedProcessInstance)}>Confirm</button>
-                        </div>) : "Waiting for manual confirmation"
+                        </div>) : "Verschickt" : "Waiting for manual confirmation"
                       }
                     </td>
                   </tr>)

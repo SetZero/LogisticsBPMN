@@ -46,15 +46,16 @@ CREATE TABLE IF NOT EXISTS package
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS shipmentInfo
 (
-    shipmentId              INT        NOT NULL DEFAULT nextval('seq_shipment_pk') PRIMARY KEY,
-    customerId              INT        NOT NULL,
-    packageId               INT        NOT NULL,
-    startLocation           GEOMETRY   NOT NULL,
-    destination             GEOMETRY   NOT NULL,
-    barcode                 TEXT       NULL,
-    attachedProcessInstance TEXT       NOT NULL,
-    price                   NUMERIC(20, 2) NOT NULL,
+    shipmentId              INT               NOT NULL DEFAULT nextval('seq_shipment_pk') PRIMARY KEY,
+    customerId              INT               NOT NULL,
+    packageId               INT               NOT NULL,
+    startLocation           GEOMETRY          NOT NULL,
+    destination             GEOMETRY          NOT NULL,
+    barcode                 TEXT              NULL,
+    attachedProcessInstance TEXT              NOT NULL,
+    price                   NUMERIC(20, 2)    NOT NULL,
     state                   shipmentStateEnum NOT NULL DEFAULT 'INFO_RECEIVED',
+    createDate              TIMESTAMPTZ       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (customerId, packageId),
     FOREIGN KEY (customerId)
         REFERENCES customer (customerId),
@@ -115,7 +116,6 @@ CREATE TABLE IF NOT EXISTS route
     driver_driverId   INT      NOT NULL,
     time              DATE     NOT NULL,
     destination       GEOMETRY NULL,
-    start             GEOMETRY NULL,
     isConfirmed       BOOLEAN  NOT NULL,
     isActive          BOOLEAN  NOT NULL,
     unique (vehicle_vehicleId, driver_driverId, time),
@@ -133,8 +133,9 @@ CREATE TABLE IF NOT EXISTS route
 
 CREATE TABLE IF NOT EXISTS route_has_package
 (
-    package_packageId INT NOT NULL,
-    routeId           INT NOT NULL,
+    package_packageId INT      NOT NULL,
+    routeId           INT      NOT NULL,
+    pickupLocation    GEOMETRY NOT NULL,
     PRIMARY KEY (package_packageId, routeId),
     FOREIGN KEY (package_packageId)
         REFERENCES package (packageId)

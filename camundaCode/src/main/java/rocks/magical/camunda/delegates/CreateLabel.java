@@ -43,7 +43,7 @@ public class CreateLabel implements JavaDelegate {
 
         String barcode = generateBarcode(shipmentId);
         packageUtil.setBarCodeBase64ForShipment(Integer.valueOf(shipmentId), barcode);
-        packageUtil.updateShipmentState(Integer.parseInt(shipmentId), ShipmentStates.COLLECTION_REQUEST);
+        packageUtil.updateShipmentState(Integer.parseInt(shipmentId), ShipmentStates.INFO_RECEIVED);
 
         execution.setVariable("price", price);
     }

@@ -17,9 +17,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.camunda.connect.plugin.impl.ConnectProcessEnginePlugin;
 import rocks.magical.camunda.database.DBConfig;
-import rocks.magical.camunda.delegates.CreateLabel;
-import rocks.magical.camunda.delegates.RequestPackages;
-import rocks.magical.camunda.delegates.ShipmentGenerator;
+import rocks.magical.camunda.delegates.*;
 
 import javax.sql.DataSource;
 import java.util.Collections;
@@ -147,6 +145,16 @@ public class PackageApplicationContext {
     @Bean("createLabelService")
     public CreateLabel createLabelService() {
         return new CreateLabel();
+    }
+
+    @Bean("cleanupProcess")
+    public CleanupProcess cleanupProcess() {
+        return new CleanupProcess();
+    }
+
+    @Bean("orderPackages")
+    public OrderPackages orderPackages() {
+        return new OrderPackages();
     }
 
     @Bean("generateShipmentData")

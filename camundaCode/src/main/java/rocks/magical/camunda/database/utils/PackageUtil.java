@@ -49,7 +49,7 @@ public class PackageUtil {
                 "FROM packageCenter pc\n" +
                 "INNER JOIN driver d ON pc.centerid = d.homebase\n" +
                 "LEFT JOIN route r ON r.driver_driverid = d.driverid\n" +
-                "WHERE ST_DWithin(location, r.destination, 20) OR r.destination IS NULL\n" +
+                "WHERE ST_DWithin(location, r.destination, 1) OR r.destination IS NULL\n" +
                 "ORDER BY ST_Distance(location, ST_GeomFromText(?, 4326))\n" +
                 "LIMIT 1";
         String pointLocation = p.getLocation();
@@ -100,7 +100,7 @@ public class PackageUtil {
      * @param driver
      * @param vehicle
      */
-    public Integer createRouteCandidate(String startLocation, PackageCenter packageCenter, Driver driver, Vehicle vehicle) {
+    public Integer createRouteCandidate(PackageCenter packageCenter, Driver driver, Vehicle vehicle) {
         Date currentDate = new Date(System.currentTimeMillis());
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         String dateString = format.format(currentDate);
@@ -115,10 +115,9 @@ public class PackageUtil {
                 (rs, i) -> rs.getInt(1));
 
         if (activeRouteId.size() <= 0) {
-            String startPointLocation = "POINT(" + startLocation + ")";
-            String query = "INSERT INTO route(vehicle_vehicleId, driver_driverId, time, destination, start, isConfirmed, isActive)\n" +
+            String query = "INSERT INTO route(vehicle_vehicleId, driver_driverId, time, destination, isConfirmed, isActive)\n" +
                     "VALUES\n" +
-                    " (?, ?, ?, ST_GeomFromText(?, 4326), ST_GeomFromText(?, 4326), ?, ?)\n" +
+                    " (?, ?, ?, ST_GeomFromText(?, 4326), ?, ?)\n" +
                     "ON CONFLICT(vehicle_vehicleId, driver_driverId, time)\n" +
                     "DO UPDATE SET vehicle_vehicleId = route.vehicle_vehicleId  RETURNING routeId";
 
@@ -126,10 +125,9 @@ public class PackageUtil {
                 ps.setInt(1, vehicle.getVehicleId());
                 ps.setInt(2, driver.getDriverId());
                 ps.setDate(3, new java.sql.Date(System.currentTimeMillis()));
-                ps.setString(4, startPointLocation);
-                ps.setString(5, packageCenter.getLocation());
+                ps.setString(4, packageCenter.getLocation());
+                ps.setBoolean(5, false);
                 ps.setBoolean(6, false);
-                ps.setBoolean(7, false);
             }, (rs, i) -> rs.getInt(1)));
         }
 
@@ -214,5 +212,11 @@ public class PackageUtil {
     public void setBarCodeBase64ForShipment(Integer shipmentId, String barcode) {
         String query = "UPDATE shipmentInfo SET barcode = ? WHERE shipmentId = ?";
         jdbcTemplate.update(query, barcode, shipmentId);
+    }
+
+    public void addPackageToRoute(Integer routeId, String shipmentId, String pickupLocation) {
+        String startPointLocation = "POINT(" + pickupLocation + ")";
+        String query = "INSERT INTO route_has_package(package_packageId, routeId, pickupLocation) VALUES ((SELECT packageId FROM shipmentInfo WHERE shipmentId = ?), ?, ST_GeomFromText(?, 4326))";
+        jdbcTemplate.update(query, Integer.parseInt(shipmentId), routeId, startPointLocation);
     }
 }

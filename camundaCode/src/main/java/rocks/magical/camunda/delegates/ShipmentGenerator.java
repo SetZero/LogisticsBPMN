@@ -22,7 +22,6 @@ public class ShipmentGenerator implements JavaDelegate {
         String customerId = delegateExecution.getVariable("customerId").toString();
         Customer customer = packageUtil.getCustomerByKey(apiKey);
         if(customer == null || !customer.getCustomerId().equals(Integer.valueOf(customerId))) {
-            //TODO: Error handling
             delegateExecution.setVariable("error", "ILLEGAL_ACCESS");
             return;
         }
@@ -31,7 +30,8 @@ public class ShipmentGenerator implements JavaDelegate {
         PackageCenter packageCenter = packageUtil.getNearestPackageCenter(startLocation);
         Driver driver = packageUtil.getBestDriverForPackageCenter(packageCenter);
         Vehicle vehicle = packageUtil.getVehicleForDriver(driver);
-        Integer routeId = packageUtil.createRouteCandidate(startLocation, packageCenter, driver, vehicle);
+        Integer routeId = packageUtil.createRouteCandidate(packageCenter, driver, vehicle);
+        packageUtil.addPackageToRoute(routeId, shipmentId, startLocation);
         packageUtil.updateShipmentState(Integer.parseInt(shipmentId), ShipmentStates.COLLECTION_REQUEST);
         //TODO: Mark shipment as shipped!
 
