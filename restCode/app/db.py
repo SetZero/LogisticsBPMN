@@ -1,13 +1,25 @@
+import sys
+import time
+
 import psycopg2 as psycopg2
+import os
 
 
 def start_database():
-    # TODO: Ping database until it is up...
     try:
-        return psycopg2.connect(dbname='postgres', user='postgres', password='hackme', host='postgres',
-                                options=f'-c search_path={"schema_package"}')
-    except Exception as e:
-        print("I am unable to connect to the database.", e)
+        while True:
+            try:
+                conn = psycopg2.connect(dbname=os.environ['DB_NAME'], user=os.environ['DB_USERNAME'], password=os.environ['DB_PASSWORD'], host=os.environ['DB_HOSTNAME'],
+                                    options=f'-c search_path={"schema_package"}')
+                cur = conn.cursor()
+                cur.execute('''select * from customer''')
+            except psycopg2.OperationalError as e:
+                print("Database is down: ", e)
+                time.sleep(0.5)
+                continue
+            return conn
+    except KeyError as e:
+        raise Exception("Environment variable is missing: ", e)
 
 
 class ShipmentDatabase:

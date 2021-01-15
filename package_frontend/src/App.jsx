@@ -7,7 +7,20 @@ const workerId = "aWorker";
 let currentId = "";
 //http://localhost:8080/engine-rest/engine/default/process-definition/key/PaketProzess/start
 
+async function startProcess() {
+  let myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
 
+  const url = "http://localhost:8080/engine-rest/engine/default/process-definition/key/PaketProzess/start";
+  const requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: '{}',
+    redirect: 'follow'
+  };
+
+  return fetch(url, requestOptions);
+}
 
 async function fetchReserveTask(url, topicName, processInstanceId) {
   let myHeaders = new Headers();
@@ -28,11 +41,13 @@ async function fetchReserveTask(url, topicName, processInstanceId) {
 }
 
 async function handleReserve(url, topicName, processInstanceId) {
-  let result = await fetchReserveTask(url, topicName, processInstanceId).then(response => response.json());
+  let result = await fetchReserveTask(url, topicName, processInstanceId);
+  result = await result.json();
   if (result.length > 0) {
     currentId = result[0].id;
-    console.log(currentId);
+    return currentId;
   }
+  throw new Error("Unable to get id!");
 }
 
 async function completeTaskHelper(taskId, objectData) {
@@ -52,7 +67,7 @@ async function completeTaskHelper(taskId, objectData) {
 }
 
 async function completeTask(taskId, width, height, depth, weight, location, pTargetLocation, pAPIKey) {
-
+  console.log(taskId)
   var raw = {
     "workerId": workerId, "variables": {
       "packageDimensions": {
@@ -119,9 +134,10 @@ function App() {
     let pTargetLocation = targetLocation.valueOf();
     let pAPIKey = apiKey.valueOf();
 
-    handleReserve("http://localhost:8080/engine-rest/external-task/fetchAndLock", "createPackage").then(() => {
-      completeTask(currentId, pWidth, pHeight, pDepth, pWeight, pLocation, pTargetLocation, pAPIKey).then(e => console.log(e)).catch(e => console.error(e))
-    }).catch(error => console.log('error', error));;
+    startProcess()
+      .then(() => handleReserve("http://localhost:8080/engine-rest/external-task/fetchAndLock", "createPackage"))
+      .then(taskId => completeTask(taskId, pWidth, pHeight, pDepth, pWeight, pLocation, pTargetLocation, pAPIKey))
+      .catch(error => console.log('error', error));
   }
 
   function confirmShipment(shipmentId, processInstanceId) {

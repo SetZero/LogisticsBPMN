@@ -41,6 +41,11 @@ services:
     build:
       context: ./restCode
       dockerfile: Dockerfile
+    environment:
+      - DB_NAME=postgres
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=hackme
+      - DB_HOSTNAME=postgres
     restart: always
     ports:
       - 8082:80
