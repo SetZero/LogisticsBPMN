@@ -227,9 +227,11 @@ function App() {
   const [depth, setDepth] = useState(0);
   const [weight, setWeight] = useState(0);
   const [location, setLocation] = useState("");
+  const [readableLocation, setReadableLocation] = useState("");
   const [targetLocation, setTargetLocation] = useState("11.070280570708459 49.41817197216562");
   const [apiKey, setApiKey] = useState("HACKME");
   const [packageLoading, setPackageLoading] = useState(false);
+  const [packageLoadingErrorMessage, setPackageLoadingErrorMessage] = useState(null);
   const classes = useStyles();
 
   const [myShipments, setMyShipments] = useState([]);
@@ -252,7 +254,10 @@ function App() {
         setPackageLoading(false);
         updateShipmentData();
       })
-      .catch(error => console.log('error', error));
+      .catch(error => {
+        setPackageLoading(false);
+        setPackageLoadingErrorMessage(JSON.stringify(error));
+      });
   }
 
   async function confirmShipment(shipmentId, processInstanceId) {
@@ -323,7 +328,7 @@ function App() {
           </Container>
         </Box>
 
-        <Box mt={5}>
+        <Box mt={5} mb={5}>
           <Container>
             <Paper className={classes.root}>
               <form onSubmit={event => handleCompleteTask(event)}>
@@ -384,13 +389,19 @@ function App() {
                   <Grid item xs={12} sm={12} mt={10}>
                     <TextField
                       label="Abholungsort"
-                      value={location} onChange={(event) => handleChange(setLocation, event)}
+                      value={readableLocation} onChange={(event) => handleChange(setLocation, event)}
                       InputProps={{
-                        endAdornment: <Button type="button" onClick={() => locateMe(setLocation)}><GpsFixedIcon /></Button>,
+                        endAdornment: <Button type="button" onClick={() => locateMe(setLocation).then(e => setReadableLocation(e.display_name))}><GpsFixedIcon /></Button>,
                       }}
                       variant="outlined"
                       fullWidth
                       required
+                      readOnly
+                      disabled
+                    />
+                    <input
+                      value={location} onChange={(event) => handleChange(setLocation, event)}
+                      hidden
                     />
                   </Grid>
                   <Box m={2} />
@@ -415,10 +426,11 @@ function App() {
                     />
                   </Grid>
                   <Box m={2} />
-                  <Button variant="contained" color="primary" type="submit" disabled={packageLoading}>
-                    {packageLoading ? (<CircularProgress />) : "Sendung erstellen"}
+                  <Box p={2}>
+                  <Button variant="contained" color="primary" type="submit" disabled={packageLoading || !!packageLoadingErrorMessage}>
+                    {packageLoading ? (<CircularProgress />) : (packageLoadingErrorMessage !== null ? "API nicht erreichbar" : "Sendung erstellen")}
                   </Button>
-                  <Box m={2} />
+                  </Box>
                 </Container>
               </form>
             </Paper>

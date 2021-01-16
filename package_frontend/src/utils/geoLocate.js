@@ -10,12 +10,17 @@ export async function getReverseGeoCoding(lat, long) {
 
 export function locateMe(writeTo) {
 
-    navigator.geolocation.getCurrentPosition((loc) => {
-        let long = loc.coords.longitude;
-        let lat = loc.coords.latitude;
-        writeTo(long + " " + lat);
-        getReverseGeoCoding(lat, long).then(e => e.json()).then(e => {
-            console.log(e);
-        });
+    return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition((loc) => {
+            let long = loc.coords.longitude;
+            let lat = loc.coords.latitude;
+            writeTo(long + " " + lat);
+            getReverseGeoCoding(lat, long)
+                .then(e => e.json())
+                .then(e => {
+                    resolve(e);
+                })
+                .catch(e => reject(e));
+        }, (e) => reject(e));
     });
 }
