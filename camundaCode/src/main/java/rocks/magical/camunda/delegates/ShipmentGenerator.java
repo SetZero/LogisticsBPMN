@@ -20,6 +20,7 @@ public class ShipmentGenerator implements JavaDelegate {
         String shipmentId = delegateExecution.getVariable("shipmentId").toString();
         String apiKey = delegateExecution.getVariable("apiKey").toString();
         String customerId = delegateExecution.getVariable("customerId").toString();
+        Object cancelShipment = delegateExecution.getVariable("cancelShipment");
         Customer customer = packageUtil.getCustomerByKey(apiKey);
         // remove used variables
         delegateExecution.removeVariable("apiKey");
@@ -30,6 +31,10 @@ public class ShipmentGenerator implements JavaDelegate {
             return;
         }
 
+        if(cancelShipment != null && cancelShipment.toString().equals("true")) {
+            delegateExecution.setVariable("error", "CANCEL_SHIPMENT");
+            return;
+        }
 
         PackageCenter packageCenter = packageUtil.getNearestPackageCenter(startLocation);
         Driver driver = packageUtil.getBestDriverForPackageCenter(packageCenter);

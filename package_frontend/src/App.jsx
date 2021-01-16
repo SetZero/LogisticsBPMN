@@ -34,6 +34,7 @@ import LocalShippingIcon from '@material-ui/icons/LocalShipping';
 import HowToRegIcon from '@material-ui/icons/HowToReg';
 import ErrorIcon from '@material-ui/icons/Error';
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import Tooltip from '@material-ui/core/Tooltip';
 import './App.css';
@@ -183,6 +184,18 @@ async function completeConfirmShipment(taskId, shipmentId, pAPIKey) {
   return completeTaskHelper(taskId, raw);
 }
 
+async function completeCancelShipment(taskId, shipmentId, pAPIKey) {
+  let raw = {
+    "workerId": workerId, "variables": {
+      "shipmentId": { "value": shipmentId },
+      "key": { "value": pAPIKey },
+      "cancelShipment": { "value": "true" }
+    }
+  };
+
+  return completeTaskHelper(taskId, raw);
+}
+
 const useStyles = makeStyles({
   root: {
     width: '100%',
@@ -213,6 +226,7 @@ function App() {
   const [location, setLocation] = useState("");
   const [targetLocation, setTargetLocation] = useState("11.070280570708459 49.41817197216562");
   const [apiKey, setApiKey] = useState("HACKME");
+  const [packageLoading, setPackageLoading] = useState(false);
   const classes = useStyles();
 
   const [myShipments, setMyShipments] = useState([]);
@@ -227,16 +241,34 @@ function App() {
     let pTargetLocation = targetLocation.valueOf();
     let pAPIKey = apiKey.valueOf();
 
+    setPackageLoading(true);
     startProcess()
       .then(() => handleReserve("http://localhost:8080/engine-rest/external-task/fetchAndLock", "createPackage"))
       .then(taskId => completeTask(taskId, pWidth, pHeight, pDepth, pWeight, pLocation, pTargetLocation, pAPIKey))
+      .then(() => {
+        setPackageLoading(false);
+        updateShipmentData();
+      })
       .catch(error => console.log('error', error));
   }
 
-  function confirmShipment(shipmentId, processInstanceId) {
+  async function confirmShipment(shipmentId, processInstanceId) {
     let pAPIKey = apiKey.valueOf();
 
-    handleReserve("http://localhost:8080/engine-rest/external-task/fetchAndLock", "collectionRequest", processInstanceId).then(e => completeConfirmShipment(currentId, shipmentId, pAPIKey));
+    return handleReserve("http://localhost:8080/engine-rest/external-task/fetchAndLock", "collectionRequest", processInstanceId).then(e => completeConfirmShipment(currentId, shipmentId, pAPIKey));
+  }
+
+  async function cancelShipment(shipmentId, processInstanceId) {
+    let pAPIKey = apiKey.valueOf();
+
+    return handleReserve("http://localhost:8080/engine-rest/external-task/fetchAndLock", "collectionRequest", processInstanceId).then(e => completeCancelShipment(currentId, shipmentId, pAPIKey));
+  }
+
+  function updateShipmentData() {
+    getMyShipments(apiKey.valueOf())
+      .then((e) => {
+        e.json().then((j) => setMyShipments(j))
+      })
   }
 
 
@@ -370,9 +402,9 @@ function App() {
                     />
                   </Grid>
                   <Box m={2} />
-                  <Button variant="contained" color="primary" type="submit">
-                    Sendung erstellen
-                </Button>
+                  <Button variant="contained" color="primary" type="submit" disabled={packageLoading}>
+                    {packageLoading ? (<CircularProgress />) : "Sendung erstellen"}
+                  </Button>
                   <Box m={2} />
                 </Container>
               </form>
@@ -382,11 +414,7 @@ function App() {
 
         <Box mt={5}>
           <Container>
-            <Button onClick={() => getMyShipments(apiKey.valueOf())
-              .then((e) => {
-                e.json().then((j) => setMyShipments(j))
-              })
-            }><UpdateIcon /> Sendungen Aktialisieren</Button>
+            <Button onClick={() => updateShipmentData()}><UpdateIcon /> Sendungen Aktialisieren</Button>
 
             <Paper className={classes.root}>
               <TableContainer className={classes.container}>
@@ -418,8 +446,8 @@ function App() {
                             {e.barcode ?
                               e.state === 'INFO_RECEIVED' ?
                                 (<ButtonGroup size="small" aria-label="small outlined button group">
-                                  <Button variant="contained" color="primary" onClick={() => confirmShipment(e.shipmentId, e.attachedProcessInstance)}>Bestätigen</Button>
-                                  <Button variant="outlined" color="secondary"><DeleteIcon /></Button>
+                                  <Button variant="contained" color="primary" onClick={() => confirmShipment(e.shipmentId, e.attachedProcessInstance).then(() => updateShipmentData())}>Bestätigen</Button>
+                                  <Button variant="outlined" color="secondary" onClick={() => cancelShipment(e.shipmentId, e.attachedProcessInstance).then(() => updateShipmentData())}><DeleteIcon /></Button>
                                 </ButtonGroup>) : (<Button disabled variant="contained" fullWidth><RemoveCircleIcon /></Button>) : "Waiting for manual confirmation"
                             }
                           </TableCell>
