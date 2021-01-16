@@ -338,7 +338,9 @@ function App() {
                         fullWidth
                         InputProps={{
                           endAdornment: <InputAdornment position="end">cm</InputAdornment>,
-                        }} />
+                        }}
+                        required
+                      />
                     </Grid><Grid item xs={6} sm={4}>
                       <TextField type="number"
                         value={height}
@@ -348,7 +350,9 @@ function App() {
                         fullWidth
                         InputProps={{
                           endAdornment: <InputAdornment position="end">cm</InputAdornment>,
-                        }} />
+                        }}
+                        required
+                      />
                     </Grid><Grid item xs={12} sm={4}>
                       <TextField type="number"
                         value={depth}
@@ -358,7 +362,9 @@ function App() {
                         fullWidth
                         InputProps={{
                           endAdornment: <InputAdornment position="end">cm</InputAdornment>,
-                        }} />
+                        }}
+                        required
+                      />
                     </Grid>
                   </Grid>
                   <Box m={2} />
@@ -371,6 +377,7 @@ function App() {
                       }}
                       variant="outlined"
                       fullWidth
+                      required
                     />
                   </Grid>
                   <Box m={2} />
@@ -383,6 +390,7 @@ function App() {
                       }}
                       variant="outlined"
                       fullWidth
+                      required
                     />
                   </Grid>
                   <Box m={2} />
@@ -392,6 +400,7 @@ function App() {
                       value={targetLocation} onChange={(event) => handleChange(setTargetLocation, event)}
                       variant="outlined"
                       fullWidth
+                      required
                     />
                   </Grid>
                   <Box m={2} />
@@ -402,6 +411,7 @@ function App() {
                       variant="outlined"
                       type="password"
                       fullWidth
+                      required
                     />
                   </Grid>
                   <Box m={2} />
@@ -424,11 +434,11 @@ function App() {
                 <Table stickyHeader aria-label="sticky table">
                   <TableHead>
                     <TableRow>
-                      <TableCell>Customer Id</TableCell>
-                      <TableCell>Shipment Id</TableCell>
+                      <TableCell>Kunden Nr.</TableCell>
+                      <TableCell>Sendungs Nr.</TableCell>
                       <TableCell>Preis</TableCell>
-                      <TableCell>Destination</TableCell>
-                      <TableCell>Start Location</TableCell>
+                      <TableCell>Zielort</TableCell>
+                      <TableCell>Startort</TableCell>
                       <TableCell>Barcode</TableCell>
                       <TableCell>Zustand</TableCell>
                       <TableCell>Aktion</TableCell>
@@ -451,7 +461,7 @@ function App() {
                                 (<ButtonGroup size="small" aria-label="small outlined button group">
                                   <Button variant="contained" color="primary" onClick={() => confirmShipment(e.shipmentId, e.attachedProcessInstance).then(() => updateShipmentData())}>Bestätigen</Button>
                                   <Button variant="outlined" color="secondary" onClick={() => cancelShipment(e.shipmentId, e.attachedProcessInstance).then(() => updateShipmentData())}><DeleteIcon /></Button>
-                                </ButtonGroup>) : (<Button disabled variant="contained" fullWidth><RemoveCircleIcon /></Button>) : (e.state === 'DECLINED' ? "Bestllung abgelehnt" : "Waiting for manual confirmation")
+                                </ButtonGroup>) : (<Button disabled variant="contained" fullWidth><RemoveCircleIcon /></Button>) : (e.state === 'DECLINED' ? "Bestllung abgelehnt" : "Wird verarbeitet")
                             }
                           </TableCell>
                         </TableRow>)
