@@ -33,6 +33,7 @@ import ScannerIcon from '@material-ui/icons/Scanner';
 import LocalShippingIcon from '@material-ui/icons/LocalShipping';
 import HowToRegIcon from '@material-ui/icons/HowToReg';
 import ErrorIcon from '@material-ui/icons/Error';
+import CancelIcon from '@material-ui/icons/Cancel';
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
@@ -73,6 +74,8 @@ function getIconForPackageState(state) {
       return (<Tooltip title="In Zustellung"><LocalShippingIcon /></Tooltip>);
     case 'DELIVERED':
       return (<Tooltip title="Zugestellt"><HowToRegIcon /></Tooltip>);
+    case 'DECLINED':
+      return (<Tooltip title="Versand abgelehnt - Support kontaktieren"><CancelIcon /></Tooltip>);
     default:
       return (<Tooltip title="Unbekannt"><ErrorIcon /></Tooltip>);
   }
@@ -448,7 +451,7 @@ function App() {
                                 (<ButtonGroup size="small" aria-label="small outlined button group">
                                   <Button variant="contained" color="primary" onClick={() => confirmShipment(e.shipmentId, e.attachedProcessInstance).then(() => updateShipmentData())}>Bestätigen</Button>
                                   <Button variant="outlined" color="secondary" onClick={() => cancelShipment(e.shipmentId, e.attachedProcessInstance).then(() => updateShipmentData())}><DeleteIcon /></Button>
-                                </ButtonGroup>) : (<Button disabled variant="contained" fullWidth><RemoveCircleIcon /></Button>) : "Waiting for manual confirmation"
+                                </ButtonGroup>) : (<Button disabled variant="contained" fullWidth><RemoveCircleIcon /></Button>) : (e.state === 'DECLINED' ? "Bestllung abgelehnt" : "Waiting for manual confirmation")
                             }
                           </TableCell>
                         </TableRow>)

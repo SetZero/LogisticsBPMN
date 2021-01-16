@@ -227,8 +227,8 @@
             <camunda:properties>
               <camunda:property id="Property_0o2vpop" />
             </camunda:properties>
-            <camunda:value id="IMPOSSIBLE_TASK" name="Unmögliche Aufgabe" />
             <camunda:value id="NONE" name="Keine Angabe / Angenommen" />
+            <camunda:value id="IMPOSSIBLE_TASK" name="Unmögliche Aufgabe" />
           </camunda:formField>
           <camunda:formField id="customerId" label="Kundennummer" type="long">
             <camunda:properties>

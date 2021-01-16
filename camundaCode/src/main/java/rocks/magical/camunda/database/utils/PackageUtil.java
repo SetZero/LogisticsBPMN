@@ -258,4 +258,9 @@ public class PackageUtil {
         else
             return null;
     }
+
+    public void deleteShipment(String shipmentId) {
+        String query = "DELETE FROM shipmentInfo WHERE shipmentId = ?";
+        jdbcTemplate.update(query, Integer.parseInt(shipmentId));
+    }
 }
