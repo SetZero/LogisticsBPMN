@@ -436,7 +436,7 @@ function App() {
                   </Grid>
                   <Box m={2} />
                   <Box p={2}>
-                    <Button variant="contained" color="primary" type="submit" disabled={packageLoading || !!packageLoadingErrorMessage}>
+                    <Button variant="contained" color="primary" type="submit" disabled={packageLoading || !!packageLoadingErrorMessage || location === ''}>
                       {packageLoading ? (<CircularProgress />) : (packageLoadingErrorMessage !== null ? "API nicht erreichbar" : "Sendung erstellen")}
                     </Button>
                   </Box>
