@@ -41,6 +41,11 @@ public class RequestPackages implements JavaDelegate {
         delegateExecution.removeVariable("apiKey");
         delegateExecution.removeVariable("key");
 
+        if(startLocation == null || startLocation.isEmpty() || targetLocation == null || targetLocation.isEmpty()) {
+            delegateExecution.setVariable("error", "MALFORMED_REQUEST");
+            return;
+        }
+
         Customer customer = packageUtil.getCustomerByKey(apiKey);
         if(customer == null) {
             delegateExecution.setVariable("error", "ILLEGAL_ACCESS");

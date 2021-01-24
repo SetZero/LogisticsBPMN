@@ -39,7 +39,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import Tooltip from '@material-ui/core/Tooltip';
 import './App.css';
-import { locateMe, getGeoCoding, getReverseGeoCoding } from './utils/geoLocate';
+import { locateMe, findLocationByName, getGeoCoding, getReverseGeoCoding } from './utils/geoLocate';
 
 const workerId = "aWorker";
 let currentId = "";
@@ -218,6 +218,10 @@ const useStyles = makeStyles({
   },
   barcode: {
     maxWidth: 320
+  },
+  searchLocationButton: {
+    width: '100%',
+    height: '100%'
   }
 });
 
@@ -387,18 +391,23 @@ function App() {
                   </Grid>
                   <Box m={2} />
                   <Grid item xs={12} sm={12} mt={10}>
-                    <TextField
-                      label="Abholungsort"
-                      value={readableLocation} onChange={(event) => handleChange(setLocation, event)}
-                      InputProps={{
-                        endAdornment: <Button type="button" onClick={() => locateMe(setLocation).then(e => setReadableLocation(e.display_name))}><GpsFixedIcon /></Button>,
-                      }}
-                      variant="outlined"
-                      fullWidth
-                      required
-                      readOnly
-                      disabled
-                    />
+                    <Grid container>
+                      <Grid item xs={8} sm={10}>
+                        <TextField
+                          label="Abholungsort"
+                          value={readableLocation} onChange={(event) => handleChange(setReadableLocation, event)}
+                          InputProps={{
+                            endAdornment: <Button type="button" onClick={() => locateMe(setLocation).then(e => setReadableLocation(e.display_name))}><GpsFixedIcon /></Button>,
+                          }}
+                          variant="outlined"
+                          fullWidth
+                          required
+                        />
+                      </Grid>
+                      <Grid item xs={4} sm={2}>
+                        <Button color="primary" variant="outlined" size="large" className={classes.searchLocationButton} onClick={() => {findLocationByName(readableLocation, setReadableLocation).then(e => setLocation(e))}}>Suche</Button>
+                      </Grid>
+                    </Grid>
                     <input
                       value={location} onChange={(event) => handleChange(setLocation, event)}
                       hidden
@@ -427,9 +436,9 @@ function App() {
                   </Grid>
                   <Box m={2} />
                   <Box p={2}>
-                  <Button variant="contained" color="primary" type="submit" disabled={packageLoading || !!packageLoadingErrorMessage}>
-                    {packageLoading ? (<CircularProgress />) : (packageLoadingErrorMessage !== null ? "API nicht erreichbar" : "Sendung erstellen")}
-                  </Button>
+                    <Button variant="contained" color="primary" type="submit" disabled={packageLoading || !!packageLoadingErrorMessage}>
+                      {packageLoading ? (<CircularProgress />) : (packageLoadingErrorMessage !== null ? "API nicht erreichbar" : "Sendung erstellen")}
+                    </Button>
                   </Box>
                 </Container>
               </form>
