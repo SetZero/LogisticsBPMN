@@ -192,5 +192,6 @@ VALUES ('1', '100', 'CAR', 'Koenigsegg Agera RS', '100', '1'),
        ('5', '400', 'PLANE', 'Lockheed SR-71 Blackbird', '100', '4');
 
 INSERT INTO destination (destinationId, customerId, destination)
-VALUES  ('1', '1',  ST_GeomFromText('POINT (12.578127347631176 43.26379475386531)', 4326)),
-        ('2', '2',  ST_GeomFromText('POINT (7.357824567453313 48.58217894367289)', 4326))
+VALUES  ('1', '1',  ST_GeomFromText('POINT (11.129333961207964 49.42018579388622)', 4326)),
+        ('2', '2',  ST_GeomFromText('POINT (11.065233714129239 49.439437296632896)', 4326)),
+        ('3', '3',  ST_GeomFromText('POINT (11.098304542239918 49.45868124484223)', 4326));

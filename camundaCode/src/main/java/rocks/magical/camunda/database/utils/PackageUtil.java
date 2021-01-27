@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import rocks.magical.camunda.database.entities.*;
+import rocks.magical.camunda.database.entities.Package;
 
 import javax.print.attribute.standard.Destination;
 import java.sql.SQLException;
@@ -86,6 +87,27 @@ public class PackageUtil {
         else
             return null;
     }
+
+//    /**
+//     * Finds the best sequence of packages
+//     * @param pointLocation the packagecenter to start the route from
+//     * @return sorted List of packages
+//     */
+//    public List<Package> getSortedPackageListForDelivery(String pointLocation){
+//        String query = "SELECT d.destination\n" +
+//                "FROM destination d\n" +
+//                "WHERE ST_DWithin(location, d.destination, 1) OR d.destination IS NULL\n" +
+//                "ORDER BY ST_Distance(location, ST_GeomFromText(?, 4326))\n" +
+//                "LIMIT 1";
+//        List<Package> packages = jdbcTemplate.query(query,
+//                ps -> ps.setString(1, pointLocation),
+//                (rs, i) -> new Package(.....));
+//        if (packages.size() > 0)
+//            return packages;
+//        else
+//            return null;
+//    }
+
 
     /**
      * TODO: check if vehicle is already in use
